@@ -1,6 +1,7 @@
 import CategoryService from "@/services/CategoryService.ts";
 import {useEffect, useState} from "react";
 import {ICategory} from "@/commons/interfaces.ts";
+import {Link} from "react-router-dom";
 
 export function CategoryListPage() {
     const [data, setData] = useState<ICategory[]>([]);
@@ -19,7 +20,7 @@ export function CategoryListPage() {
         if (id) {
             const response = await CategoryService.remove(id);
             if (response.status ===  204) {
-                loadData();
+                await loadData();
             }
         }
     }
@@ -28,7 +29,8 @@ export function CategoryListPage() {
         <>
             <main className="container">
                 <div className="text-center">
-                    <h1 className="h3 mb-3 fw-normal">Categories</h1>
+                    <h1 className="h3 mb-3 fw-normal">Lista de Categorias</h1>
+                    <Link to="/categories/new" className="btn btn-primary">Nova Categoria</Link>
                     <table className="table table-striped">
                         <thead>
                         <tr>
@@ -44,7 +46,7 @@ export function CategoryListPage() {
                                 <td>{category.id}</td>
                                 <td>{category.name}</td>
                                 <td>
-                                    <button className="btn btn-warning">Edit</button>
+                                    <Link to={`/categories/${category.id}`} className="btn btn-primary">Editar</Link>
                                 </td>
                                 <td>
                                     <button className="btn btn-danger" onClick={()=>onClickDelete(category.id)}>Delete</button>

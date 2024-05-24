@@ -1,7 +1,7 @@
-import { IUserLogin } from "@/commons/interfaces";
+import {IUserLogin} from "@/commons/interfaces";
 import AuthService from "@/services/AuthService";
-import { ChangeEvent, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import {ChangeEvent, useState} from "react";
+import {Link, useNavigate} from "react-router-dom";
 
 export function LoginPage() {
     const [form, setForm] = useState({
@@ -14,7 +14,7 @@ export function LoginPage() {
     const navigate = useNavigate();
 
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const { value, name } = event.target;
+        const {value, name} = event.target;
         setForm((previousForm) => {
             return {
                 ...previousForm,
@@ -88,11 +88,14 @@ export function LoginPage() {
                                 role="status"
                             ></div>
                         )}
-                        Cadastrar
+                        Login
                     </button>
                 </div>
                 <div className="text-center">
-                    <Link to="/signup">Cadastre-se</Link>
+                    <Link to="/signup"
+                          className="btn btn-primary">
+                        Cadastre-se
+                    </Link>
                 </div>
             </div>
         </>
