@@ -4,11 +4,11 @@ import {UserSignUpPage} from "@/pages/UserSignUpPage";
 import {AuthenticatedRoutes} from "@/Routes/AuthenticatedRoutes";
 import {HomePage} from "@/pages/HomePage";
 import {CategoryListPage} from "@/pages/CategoryListPage";
-import {CategoryFormPage} from "@/pages/CategoryFormPage";
 
 export function BaseRoutes() {
     return (
         <>
+            <NavBar/>
             <Routes>
                 {/*Public Routes*/}
                 <Route path="/login" element={<LoginPage />} />
