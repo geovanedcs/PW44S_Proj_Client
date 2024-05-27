@@ -12,6 +12,7 @@ export function CategoryFormPage() {
         formState: {errors, isSubmitting},
         reset,
     } = useForm<ICategory>();
+
     const navigate = useNavigate();
     const { id } = useParams();
     const [apiErrors, setApiErrors] = useState("");
