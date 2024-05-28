@@ -18,40 +18,59 @@ export function ProductFormPage() {
     const {id} = useParams();
     const [apiErrors, setApiErrors] = useState("");
     const [categories, setCategories] = useState<ICategory[]>([]);
-
-    const onSubmit = async (data: IProduct) => {
-        const response = await ProductService.save(data);
-        if (response.status === 201 || response.status === 200) {
-            navigate('/products');
-            reset();
-        } else {
-            setApiErrors("Ocorreu um erro ao salvar o produto");
-        }
-    }
+    const { findAll } = CategoryService;
+    const { save, findById } = ProductService;
 
     useEffect(() => {
-        if (id) {
-            loadData(Number(id));
-        }
-        loadCategories();
+            loadData();
     }, []);
 
-    const loadData = async (id: number) => {
-        const response = await ProductService.findById(id);
-        if (response.status === 200) {
-            reset(response.data);
+    const loadData = async () => {
+        // Busca a lista de categorias na API
+        const responseCategories = await findAll();
+        if (responseCategories.status === 200) {
+            // caso sucesso, adiciona a lista de categorias na variável de estado categories
+            setCategories(responseCategories.data);
+            setApiErrors("");
         } else {
-            setApiErrors("Produto não encontrado");
+            setApiErrors("Falha ao carregar a combo de categorias.");
         }
-    }
-    const loadCategories = async () => {
-        const response = await CategoryService.findAll();
-        if (response.status === 200) {
-            setCategories(response.data);
+
+        if (id) {
+            // ao editar um produto, busca ele na API e carrega no objeto form que está no state.
+            const responseProduct = await findById(parseInt(id));
+            if (responseProduct.status === 200) {
+                reset(responseProduct.data);
+                setApiErrors("");
+            } else {
+                setApiErrors("Falha ao carregar o produto");
+            }
         } else {
-            setApiErrors("Erro ao carregar categorias");
+            // ao cadastrar um novo produto, valoriza no objeto form a primeira categoria do select
+            reset((previousForm) => {
+                return {
+                    ...previousForm,
+                    category: { id: categories[0]?.id, name: "" },
+                };
+            });
         }
-    }
+    };
+
+    const onSubmit = async (data: IProduct) => {
+        const product: IProduct = {
+            ...data,
+            category: { id: data.category.id, name: "" },
+        };
+        if (id) {
+            product.id = parseInt(id);
+        }
+        const response = await save(product);
+        if (response.status === 200 || response.status === 201) {
+            navigate("/products");
+        } else {
+            setApiErrors("Falha ao salvar o produto.");
+        }
+    };
 
     return (
         <>
@@ -81,6 +100,7 @@ export function ProductFormPage() {
                         </div>
                         <div className="form-floating mb-3">
                             <input type="number"
+                                   step=".01"
                                    className={"form-control" + (errors.price ? " is-invalid" : "")}
                                    id="price"
                                    placeholder="Preço do Produto"
@@ -95,17 +115,16 @@ export function ProductFormPage() {
                             )}
                         </div>
                         <div className="form-floating mb-3">
-                            <input type="text"
-                                   className={"form-control" + (errors.description ? " is-invalid" : "")}
-                                   id="description"
-                                   placeholder="Descrição do Produto"
-                                   {...register("description", {
-                                       required: "O campo descrição é obrigatório",
-                                       maxLength: {
-                                           value: 3000,
-                                           message: "O campo descrição deve ter no máximo 3000 caracteres"
-                                       }
-                                   })}
+                            <textarea className={"form-control" + (errors.description ? " is-invalid" : "")}
+                                      id="description"
+                                      placeholder="Descrição do Produto"
+                                      {...register("description", {
+                                          required: "O campo descrição é obrigatório",
+                                          maxLength: {
+                                              value: 3000,
+                                              message: "O campo descrição deve ter no máximo 3000 caracteres"
+                                          }
+                                      })}
                             />
                             <label htmlFor="description">Descrição do Produto</label>
                             {errors.description && (
@@ -115,10 +134,11 @@ export function ProductFormPage() {
                         <div className="form-floating mb-3">
                             <select className="form-select"
                                     id="category"
-                                    {...register("category", {required: "O campo categoria é obrigatório"})}>
-                                <option value="">Selecione uma categoria</option>
-                                {categories.map(category => (
-                                    <option key={category.id} value={category.id}>{category.name}</option>
+                                    {...register("category.id", {required: "O campo categoria é obrigatório"})}>
+                                {categories.map((category: ICategory) => (
+                                    <option key={category.id} value={category.id}>
+                                        {category.name}
+                                    </option>
                                 ))}
                             </select>
                             <label htmlFor="category">Categoria do Produto</label>

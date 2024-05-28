@@ -1,9 +1,8 @@
 import { ChangeEvent, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Input } from '@/components/Input';
 import  AuthService from '@/services/AuthService.ts';
 import { IUserSignUp } from '@/commons/interfaces.ts';
-import MenuBar from "@/components/MenuBar";
+import {Input} from "@/components/input";
 
 export function UserSignUpPage() {
 
@@ -56,7 +55,6 @@ export function UserSignUpPage() {
 
     return (
         <>
-            <MenuBar />
             <div className="container">
                 <h1 className="text-center">Sign Up</h1>
                 <div className="col-12 mb-3">
