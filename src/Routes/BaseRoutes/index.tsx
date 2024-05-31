@@ -7,10 +7,12 @@ import {CategoryListPage} from "@/pages/CategoryListPage";
 import {CategoryFormPage} from "@/pages/CategoryFormPage";
 import {ProductListPage} from "@/pages/ProductListPage";
 import {ProductFormPage} from "@/pages/ProductFormPage";
+import ResponsiveAppBar from "@/components/NavBarV2";
 
 export function BaseRoutes() {
     return (
         <>
+            <ResponsiveAppBar />
             <Routes>
                 {/*Public Routes*/}
                 <Route path="/login" element={<LoginPage />} />
