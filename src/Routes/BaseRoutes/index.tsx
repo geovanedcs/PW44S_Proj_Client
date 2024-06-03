@@ -15,11 +15,11 @@ export function BaseRoutes() {
             <ResponsiveAppBar />
             <Routes>
                 {/*Public Routes*/}
+                <Route path="/" element={<HomePage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<UserSignUpPage />} />
                 {/*Private Routes*/}
                 <Route element={<AuthenticatedRoutes/>}>
-                    <Route path="/" element={<HomePage />} />
                     <Route path="/home" element={<HomePage />} />
                     <Route path="/categories" element={<CategoryListPage />} />
                     <Route path="/categories/new" element={<CategoryFormPage />} />

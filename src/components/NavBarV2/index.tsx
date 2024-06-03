@@ -11,20 +11,43 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
 import {Link, useNavigate} from "react-router-dom";
 import logo from "@/assets/img/efe9e807814e42e2b0176b80aa0e49ac (1).png";
+import {useEffect, useState} from "react";
+import {ICategory} from "@/commons/interfaces.ts";
+import CategoryService from "@/services/CategoryService.ts";
 
-interface route {
+interface IRoute {
     page: string;
     name: string;
 }
-const pages :route [] = [{page: '/', name: 'Home'}, {page: '/categories', name: 'Categorias'}]
-const settings :route[] = [{page: '/categories',name:'Categorias'}, {page: '/products', name: 'Produtos'}];
+
+const pages: IRoute [] = [{page: '/', name: 'Home'}, {page: '/categories', name: 'Categorias'}]
+const settings: IRoute[] = [{page: '/categories', name: 'Categorias'}, {page: '/products', name: 'Produtos'}];
 
 function ResponsiveAppBar() {
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
+    const [anchorElCategory, setAnchorElCategory] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+    const [data, setData] = useState<ICategory[]>([]);
+    const [validToken, setValidToken] = useState<boolean>(false);
+    useEffect(() => {
+        loadData();
+    }, [data]);
+
+    const loadData = async () => {
+        const response = await CategoryService.findAll();
+        if (response.status === 200) {
+            setData(response.data);
+            setValidToken(true);
+        } else {
+            localStorage.removeItem('token');
+        }
+    }
+
+    const handleOpenCategoryMenu = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorElCategory(event.currentTarget);
+    }
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
@@ -41,6 +64,10 @@ function ResponsiveAppBar() {
         setAnchorElUser(null);
     };
 
+    const handleCloseCategoryMenu = () => {
+        setAnchorElCategory(null);
+    }
+
     const navigate = useNavigate();
 
     return (
@@ -48,9 +75,9 @@ function ResponsiveAppBar() {
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
                     <Link to="/" className="navbar-brand">
-                        <img src={logo} width="60" alt="UTFPR" />
+                        <img src={logo} width="60" alt="My Pet Space"/>
                     </Link>
-                    <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+                    <Box sx={{flexGrow: 1, display: {xs: 'flex', md: 'none'}}}>
                         <IconButton
                             size="large"
                             aria-label="account of current user"
@@ -59,7 +86,7 @@ function ResponsiveAppBar() {
                             onClick={handleOpenNavMenu}
                             color="inherit"
                         >
-                            <MenuIcon />
+                            <MenuIcon/>
                         </IconButton>
                         <Menu
                             id="menu-appbar"
@@ -76,54 +103,67 @@ function ResponsiveAppBar() {
                             open={Boolean(anchorElNav)}
                             onClose={handleCloseNavMenu}
                             sx={{
-                                display: { xs: 'block', md: 'none' },
+                                display: {xs: 'block', md: 'none'},
                             }}
                         >
-                            {pages.map((page) => (
-                                <MenuItem key={page.name} onClick={() => navigate(page.page)}>
+                            {pages.map((page) =>
+                                <MenuItem key={page.name} onClick={() => {
+                                    navigate(page.page);
+                                    handleCloseCategoryMenu();
+                                }}>
                                     <Typography textAlign="center">{page.name}</Typography>
                                 </MenuItem>
-                            ))}
+                            )}
                         </Menu>
                     </Box>
-                    <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-                    <Typography
-                        variant="h5"
-                        noWrap
-                        component="a"
-                        sx={{
-                            mr: 2,
-                            display: { xs: 'flex', md: 'none' },
-                            flexGrow: 1,
-                            fontFamily: 'monospace',
-                            fontWeight: 700,
-                            letterSpacing: '.3rem',
-                            color: 'inherit',
-                            textDecoration: 'none',
-                        }}
-                    >
-                        LOGO
-                    </Typography>
-                    <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                        {pages.map((page) => (
-                            <Button
-                                key={page.name}
-                                onClick={() =>navigate(page.page)}
-                                sx={{ my: 2, color: 'white', display: 'block' }}
-                            >
-                                {page.name}
-                            </Button>
+                    <Box sx={{flexGrow: 1, display: {xs: 'none', md: 'flex'}}}>
+                        {pages.map((page) => (page.name != 'Categorias' ? (
+                                (<Button
+                                    key={page.name}
+                                    onClick={() => navigate(page.page)}
+                                    sx={{my: 2, color: 'white', display: 'block'}}
+                                >
+                                    {page.name}
+                                </Button>)) : (
+                                (
+                                    <Button onClick={handleOpenCategoryMenu}>
+                                        <Box sx={{flexGrow: 0}}>
+                                            {page.name}
+                                            <Menu
+                                                sx={{mt: '45px'}}
+                                                id="category-appbar"
+                                                anchorEl={anchorElCategory}
+                                                anchorOrigin={{
+                                                    vertical: 'top',
+                                                    horizontal: 'right',
+                                                }}
+                                                transformOrigin={{
+                                                    vertical: 'top',
+                                                    horizontal: 'right',
+                                                }}
+                                                open={Boolean(anchorElCategory)}
+                                                onClose={handleCloseCategoryMenu}
+                                            >
+                                                {data.map((data) => (
+                                                    <MenuItem key={data.name} onClick={() => navigate("/")}>
+                                                        <Typography textAlign="center">{data.name}</Typography>
+                                                    </MenuItem>
+                                                ))}
+                                            </Menu>
+                                        </Box>
+                                    </Button>
+                                )
+                            )
                         ))}
                     </Box>
-
-                    <Box sx={{ flexGrow: 0 }}>
+                    {validToken ? (<Box sx={{flexGrow: 0}}>
                         <Tooltip title="Open settings">
-                            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                            <IconButton onClick={handleOpenUserMenu} sx={{p: 0}}>
+                                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg"/>
                             </IconButton>
                         </Tooltip>
                         <Menu
-                            sx={{ mt: '45px' }}
+                            sx={{mt: '45px'}}
                             id="menu-appbar"
                             anchorEl={anchorElUser}
                             anchorOrigin={{
@@ -144,10 +184,19 @@ function ResponsiveAppBar() {
                                 </MenuItem>
                             ))}
                         </Menu>
-                    </Box>
+                    </Box>): (
+                        <Button onClick={() => navigate("/login")}>
+                            <Typography textAlign="center"
+                                        aria-valuetext={"Login"}
+                            >
+                                Login
+                            </Typography>
+                        </Button>
+                    )}
                 </Toolbar>
             </Container>
         </AppBar>
     );
 }
+
 export default ResponsiveAppBar;
