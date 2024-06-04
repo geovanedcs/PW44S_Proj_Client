@@ -23,7 +23,9 @@ interface IRoute {
 }
 
 const pages: IRoute [] = [{page: '/', name: 'Home'}, {page: '/categories', name: 'Categorias'}]
-const settings: IRoute[] = [{page: '/categories', name: 'Categorias'}, {page: '/products', name: 'Produtos'}];
+const settings: IRoute[] = [{page: '/categories', name: 'Categorias'},
+    {page: '/products', name: 'Produtos'},
+    {page: 'logout', name: 'Logout'}];
 
 function ResponsiveAppBar() {
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
@@ -33,7 +35,7 @@ function ResponsiveAppBar() {
     const [validToken, setValidToken] = useState<boolean>(false);
     useEffect(() => {
         loadData();
-    }, [data]);
+    }, [validToken]);
 
     const loadData = async () => {
         const response = await CategoryService.findAll();
@@ -43,6 +45,13 @@ function ResponsiveAppBar() {
         } else {
             localStorage.removeItem('token');
         }
+    }
+
+    const onClickLogout = () =>{
+        setValidToken(false);
+        handleCloseUserMenu()
+        localStorage.removeItem('token');
+        navigate("/");
     }
 
     const handleOpenCategoryMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -64,14 +73,15 @@ function ResponsiveAppBar() {
         setAnchorElUser(null);
     };
 
-    const handleCloseCategoryMenu = () => {
+    const handleCloseCategoryMenu = (whereTo: string) => {
+        navigate(whereTo)
         setAnchorElCategory(null);
     }
 
     const navigate = useNavigate();
 
     return (
-        <AppBar position="static">
+        <AppBar position="fixed">
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
                     <Link to="/" className="navbar-brand">
@@ -107,10 +117,7 @@ function ResponsiveAppBar() {
                             }}
                         >
                             {pages.map((page) =>
-                                <MenuItem key={page.name} onClick={() => {
-                                    navigate(page.page);
-                                    handleCloseCategoryMenu();
-                                }}>
+                                <MenuItem key={page.name} onClick={() => handleCloseCategoryMenu(page.page)}>
                                     <Typography textAlign="center">{page.name}</Typography>
                                 </MenuItem>
                             )}
@@ -120,43 +127,56 @@ function ResponsiveAppBar() {
                         {pages.map((page) => (page.name != 'Categorias' ? (
                                 (<Button
                                     key={page.name}
-                                    onClick={() => navigate(page.page)}
+                                    onClick={() => handleCloseCategoryMenu(page.page)}
                                     sx={{my: 2, color: 'white', display: 'block'}}
                                 >
                                     {page.name}
                                 </Button>)) : (
-                                (
-                                    <Button onClick={handleOpenCategoryMenu}>
-                                        <Box sx={{flexGrow: 0}}>
-                                            {page.name}
-                                            <Menu
-                                                sx={{mt: '45px'}}
-                                                id="category-appbar"
-                                                anchorEl={anchorElCategory}
-                                                anchorOrigin={{
-                                                    vertical: 'top',
-                                                    horizontal: 'right',
-                                                }}
-                                                transformOrigin={{
-                                                    vertical: 'top',
-                                                    horizontal: 'right',
-                                                }}
-                                                open={Boolean(anchorElCategory)}
-                                                onClose={handleCloseCategoryMenu}
-                                            >
-                                                {data.map((data) => (
-                                                    <MenuItem key={data.name} onClick={() => navigate("/")}>
-                                                        <Typography textAlign="center">{data.name}</Typography>
-                                                    </MenuItem>
-                                                ))}
-                                            </Menu>
-                                        </Box>
+                                <Box sx={{flexGrow: 0}}>
+                                    <Button onClick={handleOpenCategoryMenu}
+                                            id={page.name}
+                                            aria-controls={anchorElCategory ? 'category-menu' : undefined}
+                                            aria-haspopup="true"
+                                            aria-expanded={anchorElCategory ? 'true' : undefined}
+                                    >
+                                        {page.name}
                                     </Button>
-                                )
+                                    <Menu
+                                        sx={{mt: '45px'}}
+                                        id="category-menu"
+                                        anchorEl={anchorElCategory}
+                                        open={Boolean(anchorElCategory)}
+                                        onClose={handleCloseCategoryMenu}
+                                        MenuListProps={{'aria-labelledby': 'category-menu'}}
+                                        anchorOrigin={{
+                                            vertical: 'top',
+                                            horizontal: 'left',
+                                        }}
+                                        keepMounted
+                                        transformOrigin={{
+                                            vertical: 'top',
+                                            horizontal: 'left',
+                                        }}
+                                    >
+                                        {data.map((data) => (
+                                            <MenuItem key={data.name} onClick={() => handleCloseCategoryMenu(page.page)}>
+                                                <Typography textAlign="center">{data.name}</Typography>
+                                            </MenuItem>
+                                        ))}
+                                    </Menu>
+                                </Box>
                             )
                         ))}
                     </Box>
-                    {validToken ? (<Box sx={{flexGrow: 0}}>
+                    {!validToken ? (
+                        <Button onClick={() => navigate("/login")}>
+                            <Typography textAlign="center"
+                                        aria-valuetext={"Login"}
+                            >
+                                Login
+                            </Typography>
+                        </Button>) :
+                        (<Box sx={{flexGrow: 0}}>
                         <Tooltip title="Open settings">
                             <IconButton onClick={handleOpenUserMenu} sx={{p: 0}}>
                                 <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg"/>
@@ -178,21 +198,19 @@ function ResponsiveAppBar() {
                             open={Boolean(anchorElUser)}
                             onClose={handleCloseUserMenu}
                         >
-                            {settings.map((setting) => (
+                            {settings.map((setting) => (setting.page != "logout" ?
+                                (
                                 <MenuItem key={setting.name} onClick={() => navigate(setting.page)}>
                                     <Typography textAlign="center">{setting.name}</Typography>
                                 </MenuItem>
+                            ): (
+                                <MenuItem key={setting.name} onClick={() => onClickLogout()}>
+                                    <Typography textAlign="center">{setting.name}</Typography>
+                                </MenuItem>
+                                )
                             ))}
                         </Menu>
-                    </Box>): (
-                        <Button onClick={() => navigate("/login")}>
-                            <Typography textAlign="center"
-                                        aria-valuetext={"Login"}
-                            >
-                                Login
-                            </Typography>
-                        </Button>
-                    )}
+                    </Box>)}
                 </Toolbar>
             </Container>
         </AppBar>

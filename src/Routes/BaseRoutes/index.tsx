@@ -8,6 +8,7 @@ import {CategoryFormPage} from "@/pages/CategoryFormPage";
 import {ProductListPage} from "@/pages/ProductListPage";
 import {ProductFormPage} from "@/pages/ProductFormPage";
 import ResponsiveAppBar from "@/components/NavBarV2";
+import {ProductDetailsPage} from "@/pages/ProductDetailsPage";
 
 export function BaseRoutes() {
     return (
@@ -18,9 +19,10 @@ export function BaseRoutes() {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<UserSignUpPage />} />
+                <Route path="/details/:id" element={<ProductDetailsPage />} />
                 {/*Private Routes*/}
                 <Route element={<AuthenticatedRoutes/>}>
-                    <Route path="/home" element={<HomePage />} />
+                    <Route path="/" element={<HomePage />} />
                     <Route path="/categories" element={<CategoryListPage />} />
                     <Route path="/categories/new" element={<CategoryFormPage />} />
                     <Route path="/categories/:id" element={<CategoryFormPage />} />
