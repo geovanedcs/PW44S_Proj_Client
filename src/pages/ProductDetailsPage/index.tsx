@@ -33,7 +33,7 @@ export function ProductDetailsPage(){
                         </div>
                         <div className="col-md-6">
                             <h2>{data.name}</h2>
-                            <p>{data.description}</p>
+                            <p dangerouslySetInnerHTML={{__html: data.description}}/>
                             <p>R$ {data.price}</p>
                             <button className="btn btn-primary">Adicionar ao Carrinho</button>
                         </div>

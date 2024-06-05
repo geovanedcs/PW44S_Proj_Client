@@ -9,11 +9,13 @@ import {ProductListPage} from "@/pages/ProductListPage";
 import {ProductFormPage} from "@/pages/ProductFormPage";
 import ResponsiveAppBar from "@/components/NavBarV2";
 import {ProductDetailsPage} from "@/pages/ProductDetailsPage";
+import Box from "@mui/material/Box";
 
 export function BaseRoutes() {
     return (
         <>
             <ResponsiveAppBar />
+            <Box sx={{height: '64px'}}/>
             <Routes>
                 {/*Public Routes*/}
                 <Route path="/" element={<HomePage />} />
