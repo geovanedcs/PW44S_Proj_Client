@@ -33,6 +33,20 @@ const isAuthenticated = (): boolean => {
     return false;
 }
 
+const isAuthenticatedTokenValid = async(): Promise<boolean> => {
+    const token = localStorage.getItem("token");
+    try {
+        if (token) {
+            api.defaults.headers.common["Authorization"] = `Bearer ${JSON.parse(token)}`;
+            await api.get("/users/validateToken");
+            return true;
+        }
+        return false;
+    } catch (error: any) {
+        return false;
+    }
+}
+
 const logout = (): void => {
     localStorage.removeItem("token");
     api.defaults.headers.common["Authorization"] = '';
@@ -44,6 +58,7 @@ const AuthService = {
     login,
     isAuthenticated,
     logout,
+    isAuthenticatedTokenValid,
 };
 
 export default AuthService;

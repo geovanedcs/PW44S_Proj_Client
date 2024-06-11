@@ -33,11 +33,13 @@ function ResponsiveAppBar() {
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
     const [data, setData] = useState<ICategory[]>([]);
     const [validToken, setValidToken] = useState<boolean>(false);
+
     useEffect(() => {
         loadData();
     }, [validToken]);
 
     const loadData = async () => {
+        // verifica se o token é válido
         const response = await CategoryService.findAll();
         if (response.status === 200) {
             setData(response.data);
@@ -129,6 +131,7 @@ function ResponsiveAppBar() {
                                     key={page.name}
                                     onClick={() => handleCloseCategoryMenu(page.page)}
                                     sx={{my: 2, color: 'white', display: 'block'}}
+
                                 >
                                     {page.name}
                                 </Button>)) : (
@@ -138,6 +141,7 @@ function ResponsiveAppBar() {
                                             aria-controls={anchorElCategory ? 'category-menu' : undefined}
                                             aria-haspopup="true"
                                             aria-expanded={anchorElCategory ? 'true' : undefined}
+                                            style={{color: "white"}}
                                     >
                                         {page.name}
                                     </Button>
