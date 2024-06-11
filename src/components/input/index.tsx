@@ -1,4 +1,4 @@
-import {ChangeEvent} from 'react';
+import { ChangeEvent } from 'react';
 
 interface IInputProps {
     id: string;
@@ -14,7 +14,7 @@ interface IInputProps {
 }
 
 export function Input({
-                          id,
+                        id,
                           name,
                           className,
                           label,
