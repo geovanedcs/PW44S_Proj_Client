@@ -57,7 +57,6 @@ function ResponsiveAppBar() {
         } else {
             localStorage.removeItem('token');
         }
-        console.log(validToken);
     }
 
     const onClickLogout = () =>{
@@ -100,7 +99,7 @@ function ResponsiveAppBar() {
                     <Link to="/" className="navbar-brand">
                         <img src={logo} width="60" alt="My Pet Space"/>
                     </Link>
-                    <Box sx={{flexGrow: 1, display: {xs: 'flex', md: 'none'}}}>
+                    <Box key={1} sx={{flexGrow: 1, display: {xs: 'flex', md: 'none'}}}>
                         <IconButton
                             size="large"
                             aria-label="account of current user"
@@ -136,17 +135,17 @@ function ResponsiveAppBar() {
                             )}
                         </Menu>
                     </Box>
-                    <Box sx={{flexGrow: 1, display: {xs: 'none', md: 'flex'}}}>
-                        {pages.map((page) => (page.name != 'Categorias' ? (
+                    <Box key={2} sx={{flexGrow: 1, display: {xs: 'none', md: 'flex'}}}>
+                        {pages.map((page, index) => (page.name != 'Categorias' ? (
                                 (<Button
-                                    key={page.name}
+                                    key={index}
                                     onClick={() => handleCloseCategoryMenu(page.page)}
                                     sx={{my: 2, color: 'white', display: 'block'}}
 
                                 >
                                     {page.name}
                                 </Button>)) : (
-                                <Box sx={{flexGrow: 0}}>
+                                <Box key={4} sx={{flexGrow: 0}}>
                                     <Button onClick={handleOpenCategoryMenu}
                                             id={page.name}
                                             aria-controls={anchorElCategory ? 'category-menu' : undefined}
@@ -173,8 +172,8 @@ function ResponsiveAppBar() {
                                             horizontal: 'left',
                                         }}
                                     >
-                                        {data.map((data) => (
-                                            <MenuItem key={data.name} onClick={() => handleCloseCategoryMenu(page.page)}>
+                                        {data.map((data, index) => (
+                                            <MenuItem key={index} onClick={() => handleCloseCategoryMenu(page.page)}>
                                                 <Typography textAlign="center">{data.name}</Typography>
                                             </MenuItem>
                                         ))}
@@ -192,7 +191,7 @@ function ResponsiveAppBar() {
                                     Login
                                 </Typography>
                             </Button>) :
-                        (<Box sx={{flexGrow: 0}}>
+                        (<Box key={3} sx={{flexGrow: 0}}>
                         <Tooltip title="Open settings">
                             <IconButton onClick={handleOpenUserMenu} sx={{p: 0}}>
                                 <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg"/>
@@ -214,13 +213,13 @@ function ResponsiveAppBar() {
                             open={Boolean(anchorElUser)}
                             onClose={handleCloseUserMenu}
                         >
-                            {settings.map((setting) => (setting.page != "logout" ?
+                            {settings.map((setting, index) => (setting.page != "logout" ?
                                 (
-                                <MenuItem key={setting.name} onClick={() => navigate(setting.page)}>
+                                <MenuItem key={index} onClick={() => navigate(setting.page)}>
                                     <Typography textAlign="center">{setting.name}</Typography>
                                 </MenuItem>
                             ): (
-                                <MenuItem key={setting.name} onClick={() => onClickLogout()}>
+                                <MenuItem key={index} onClick={() => onClickLogout()}>
                                     <Typography textAlign="center">{setting.name}</Typography>
                                 </MenuItem>
                                 )
