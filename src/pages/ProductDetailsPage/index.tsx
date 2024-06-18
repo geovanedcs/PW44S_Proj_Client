@@ -20,6 +20,7 @@ export function ProductDetailsPage(){
         } else {
             navigate("/404");
         }
+        console.log(response.data)
     }
 
     return(
@@ -29,7 +30,7 @@ export function ProductDetailsPage(){
                     <h1 className="h3 mb-3 fw-normal">Detalhes do Produto</h1>
                     <div className="row">
                         <div className="col-md-6">
-                            <img src="https://via.placeholder.com/400" alt="Imagem do Produto"/>
+                            <img src={data.imgUrl} alt="Imagem do Produto"/>
                         </div>
                         <div className="col-md-6">
                             <h2>{data.name}</h2>

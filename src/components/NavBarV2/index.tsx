@@ -16,6 +16,8 @@ import logo from "@/assets/img/efe9e807814e42e2b0176b80aa0e49ac (1).png";
 import {useEffect, useState} from "react";
 import {ICategory} from "@/commons/interfaces.ts";
 import CategoryService from "@/services/CategoryService.ts";
+import AuthService from "@/services/AuthService.ts";
+import {LoginPageModal} from "@/components/ModalLogin";
 
 interface IRoute {
     page: string;
@@ -33,20 +35,29 @@ function ResponsiveAppBar() {
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
     const [data, setData] = useState<ICategory[]>([]);
     const [validToken, setValidToken] = useState<boolean>(false);
+    const [open, setOpen] = useState(false);
+    const handleOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
 
     useEffect(() => {
         loadData();
-    }, [validToken]);
+    }, []);
 
     const loadData = async () => {
-        // verifica se o token é válido
+        const validToken = await AuthService.isAuthenticatedTokenValid();
         const response = await CategoryService.findAll();
         if (response.status === 200) {
+            setValidToken(validToken);
             setData(response.data);
-            setValidToken(true);
         } else {
             localStorage.removeItem('token');
         }
+        console.log(validToken);
     }
 
     const onClickLogout = () =>{
@@ -143,7 +154,7 @@ function ResponsiveAppBar() {
                                             aria-expanded={anchorElCategory ? 'true' : undefined}
                                             style={{color: "white"}}
                                     >
-                                        {page.name}
+                                        <Typography textAlign="center" sx={{my: 2, color: 'white', display: 'block'}}>{page.name}</Typography>
                                     </Button>
                                     <Menu
                                         sx={{mt: '45px'}}
@@ -173,13 +184,14 @@ function ResponsiveAppBar() {
                         ))}
                     </Box>
                     {!validToken ? (
-                        <Button onClick={() => navigate("/login")}>
-                            <Typography textAlign="center"
-                                        aria-valuetext={"Login"}
-                            >
-                                Login
-                            </Typography>
-                        </Button>) :
+                            <Button onClick={handleOpen}>
+                                <Typography textAlign="center"
+                                            aria-valuetext={"Login"}
+                                            sx={{my: 2, color: 'white', display: 'block'}}
+                                >
+                                    Login
+                                </Typography>
+                            </Button>) :
                         (<Box sx={{flexGrow: 0}}>
                         <Tooltip title="Open settings">
                             <IconButton onClick={handleOpenUserMenu} sx={{p: 0}}>
@@ -215,6 +227,7 @@ function ResponsiveAppBar() {
                             ))}
                         </Menu>
                     </Box>)}
+                    <LoginPageModal open={open} handleClose={handleClose} />
                 </Toolbar>
             </Container>
         </AppBar>

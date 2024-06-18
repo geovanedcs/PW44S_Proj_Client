@@ -16,6 +16,7 @@ export function HomePage() {
         if (response.status === 200) {
             setData(response.data);
         }
+        console.log(response.data[0])
     }
 
     return (
