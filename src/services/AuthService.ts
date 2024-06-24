@@ -35,10 +35,12 @@ const isAuthenticated = (): boolean => {
 
 const isAuthenticatedTokenValid = async(): Promise<boolean> => {
     const token = localStorage.getItem("token");
+    let response;
     try {
         if (token) {
             api.defaults.headers.common["Authorization"] = `Bearer ${JSON.parse(token)}`;
-            await api.get("/users/validateToken");
+            response = await api.get("/users/validateToken");
+            if(response.status != 500)
             return true;
         }
         return false;

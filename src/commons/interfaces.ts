@@ -23,3 +23,17 @@ export interface IProduct {
     category: ICategory;
     stock: number;
 }
+
+export interface ICartItem {
+    product: IProduct;
+    quantity: number;
+    discount?: number;
+}
+
+export interface IPurchase {
+    paymentMethod: string;
+    zipCode: string;
+    address?: string;
+    products: ICartItem[];
+    status?: string;
+}

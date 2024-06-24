@@ -16,6 +16,7 @@ import logo from "@/assets/img/efe9e807814e42e2b0176b80aa0e49ac (1).png";
 import {useEffect, useState} from "react";
 import {ICategory} from "@/commons/interfaces.ts";
 import CategoryService from "@/services/CategoryService.ts";
+import AuthService from "@/services/AuthService.ts";
 
 interface IRoute {
     page: string;
@@ -41,9 +42,9 @@ function ResponsiveAppBar() {
     const loadData = async () => {
         // verifica se o token é válido
         const response = await CategoryService.findAll();
+        setValidToken(await AuthService.isAuthenticatedTokenValid())
         if (response.status === 200) {
             setData(response.data);
-            setValidToken(true);
         } else {
             localStorage.removeItem('token');
         }
@@ -141,9 +142,8 @@ function ResponsiveAppBar() {
                                             aria-controls={anchorElCategory ? 'category-menu' : undefined}
                                             aria-haspopup="true"
                                             aria-expanded={anchorElCategory ? 'true' : undefined}
-                                            style={{color: "white"}}
                                     >
-                                        {page.name}
+                                        <Typography textAlign="center" aria-valuetext={page.name} sx={{my: 2, color: 'white', display: 'block'}}>{page.name}</Typography>
                                     </Button>
                                     <Menu
                                         sx={{mt: '45px'}}
@@ -176,6 +176,7 @@ function ResponsiveAppBar() {
                         <Button onClick={() => navigate("/login")}>
                             <Typography textAlign="center"
                                         aria-valuetext={"Login"}
+                                        sx={{my: 2, color: 'white', display: 'block'}}
                             >
                                 Login
                             </Typography>
