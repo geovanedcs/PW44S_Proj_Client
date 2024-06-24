@@ -13,26 +13,35 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import {Link, useNavigate} from "react-router-dom";
 import logo from "@/assets/img/efe9e807814e42e2b0176b80aa0e49ac (1).png";
-import {useEffect, useState} from "react";
+import {ChangeEvent, useEffect, useState} from "react";
 import {ICategory, IUserLogin} from "@/commons/interfaces.ts";
 import CategoryService from "@/services/CategoryService.ts";
 import AuthService from "@/services/AuthService.ts";
-import {LoginPageModal} from "@/components/ModalLogin";
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import { styled } from '@mui/material/styles';
+import Badge, { BadgeProps } from '@mui/material/Badge';
 import {
+    Alert,
     Dialog,
     DialogActions,
     DialogContent,
-    DialogContentText,
     DialogTitle,
-    FormControl, FormLabel, Input,
-    TextField
+    FormControl, FormLabel, Input, Snackbar,
 } from "@mui/material";
-import {InputRounded} from "@mui/icons-material";
+import {PurchaseService} from "@/services/PurchaseService.ts";
 
 interface IRoute {
     page: string;
     name: string;
 }
+const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
+    '& .MuiBadge-badge': {
+        right: -3,
+        top: 13,
+        border: `2px solid ${theme.palette.background.paper}`,
+        padding: '0 4px',
+    },
+}));
 
 const pages: IRoute [] = [{page: '/', name: 'Home'}, {page: '/categories', name: 'Categorias'}]
 const settings: IRoute[] = [{page: '/categories', name: 'Categorias'},
@@ -44,9 +53,11 @@ function ResponsiveAppBar() {
         username: "",
         password: "",
     });
+    const [cartBadge, setCartBadge] = useState(0);
     const [pendingApiCall, setPendingApiCall] = useState(false);
     const [apiError, setApiError] = useState("");
     const [apiSuccess, setApiSuccess] = useState("");
+    const [loginSuccess, setLoginSuccess] = useState(false);
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElCategory, setAnchorElCategory] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
@@ -56,11 +67,15 @@ function ResponsiveAppBar() {
     const handleOpen = () => {
         setOpenLogin(true);
     };
-
     const handleClose = () => {
         setOpenLogin(false);
     };
-
+    const handleOpenSnackbar = () => {
+        setLoginSuccess(true);
+    }
+    const handleCloseSnackbar = () => {
+        setLoginSuccess(false);
+    }
     useEffect(() => {
         loadData();
     }, []);
@@ -68,13 +83,25 @@ function ResponsiveAppBar() {
     const loadData = async () => {
         const validToken = await AuthService.isAuthenticatedTokenValid();
         const response = await CategoryService.findAll();
+        const cart = await PurchaseService.retrieveCart();
         if (response.status === 200) {
             setValidToken(validToken);
             setData(response.data);
         } else {
             localStorage.removeItem('token');
         }
+        setCartBadge(cart.length);
     }
+
+    const onChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const {value, name} = event.target;
+        setForm((previousForm) => {
+            return {
+                ...previousForm,
+                [name]: value,
+            };
+        });
+    };
 
     const onClickLogout = () => {
         setValidToken(false);
@@ -92,10 +119,8 @@ function ResponsiveAppBar() {
         const response = await AuthService.login(login);
         if (response.status === 200 || response.status === 201) {
             setApiSuccess("Autenticado com sucesso!");
-            setTimeout(() => {
-                navigate("/");
-            }, 1000);
-
+            handleOpenSnackbar();
+            setValidToken(true)
             setOpenLogin(false);
         } else {
             setApiError("Erro ao localizar o usuário!");
@@ -223,7 +248,14 @@ function ResponsiveAppBar() {
                             )
                         ))}
                     </Box>
-                    {!validToken ? (
+                    <Box key={6} sx={{flexGrow: 0, paddingRight: 2}}>
+                        <IconButton aria-label="cart" onClick={() => navigate("/cart")}>
+                            <StyledBadge badgeContent={cartBadge} color="secondary">
+                                <ShoppingCartIcon />
+                            </StyledBadge>
+                        </IconButton>
+                    </Box>
+                        {!validToken ? (
                             <Button onClick={() => handleOpen()}>
                                 <Typography textAlign="center"
                                             aria-valuetext={"Login"}
@@ -271,6 +303,10 @@ function ResponsiveAppBar() {
                             onClose={handleClose}
                             PaperProps={{
                                 component: 'form',
+                                onSubmit: (event: { preventDefault: () => void; }) => {
+                                    event.preventDefault();
+                                    onClickLogin();
+                                }
                             }}>
                         <DialogTitle>
                             <Typography textAlign="center">Login</Typography>
@@ -284,9 +320,11 @@ function ResponsiveAppBar() {
                                     autoFocus
                                     required
                                     margin="dense"
+                                    value={form.username}
                                     id="username"
                                     name="username"
                                     type="text"
+                                    onChange={onChange}
                                     fullWidth/>
                             </FormControl>
                             <FormControl>
@@ -299,21 +337,36 @@ function ResponsiveAppBar() {
                                     id="password"
                                     name="password"
                                     type="password"
+                                    value={form.password}
+                                    onChange={onChange}
                                     fullWidth/>
                             </FormControl>
+                            {apiError && (
+                                <div className="alert alert-danger text-center">{apiError}</div>
+                            )}
                         </DialogContent>
                         <DialogActions>
                             <Button onClick={() => {
                                 navigate("/signup")
                                 handleClose()
                             }}>Cadastre-se</Button>
+                            <Box sx={{paddingRight: 15}}/>
                             <Button onClick={handleClose}>Cancelar</Button>
-                            <Button type="submit" onSubmit={onClickLogin}>Login</Button>
+                            <Button type="submit" disabled={pendingApiCall}>Login</Button>
                         </DialogActions>
                     </Dialog>
+                    <Snackbar open={loginSuccess} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+                        <Alert
+                            onClose={handleCloseSnackbar}
+                            severity="success"
+                            variant="filled"
+                            sx={{ width: '100%' }}
+                        >
+                            {apiSuccess}
+                        </Alert>
+                    </Snackbar>
                 </Toolbar>
             </Container>
-
         </AppBar>
     );
 }

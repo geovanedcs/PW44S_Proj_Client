@@ -30,7 +30,7 @@ export default function ProductCard({
 
     const onClickAddCart = async () => {
         const prod = await ProductService.findById(id)
-        const response = await PurchaseService.addToCart(prod);
+        const response = await PurchaseService.addToCart(prod.data);
         if(response.error) {
             alert(response.error);
         }

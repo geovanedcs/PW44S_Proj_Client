@@ -10,6 +10,7 @@ import {ProductFormPage} from "@/pages/ProductFormPage";
 import ResponsiveAppBar from "@/components/NavBarV2";
 import {ProductDetailsPage} from "@/pages/ProductDetailsPage";
 import Box from "@mui/material/Box";
+import {CartDetails} from "@/pages/CartDetails";
 
 export function BaseRoutes() {
     return (
@@ -22,6 +23,7 @@ export function BaseRoutes() {
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<UserSignUpPage />} />
                 <Route path="/details/:id" element={<ProductDetailsPage />} />
+                <Route path="/cart" element={<CartDetails />} />
                 {/*Private Routes*/}
                 <Route element={<AuthenticatedRoutes/>}>
                     <Route path="/" element={<HomePage />} />
