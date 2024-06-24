@@ -1,4 +1,5 @@
 import {api} from "@/libs/axios.ts";
+import {IProduct} from "@/commons/interfaces.ts";
 
 const URL = '/purchase';
 
@@ -12,7 +13,7 @@ const retrieveCart = async () => {
     return response;
 }
 
-const addToCart = async (product: any) => {
+const addToCart = async (product: IProduct) => {
     let response;
     try {
         const cart = await retrieveCart();

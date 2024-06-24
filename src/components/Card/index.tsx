@@ -7,6 +7,8 @@ import Typography from '@mui/material/Typography';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import LaunchIcon from '@mui/icons-material/Launch';
 import {useNavigate} from "react-router-dom";
+import {PurchaseService} from "@/services/PurchaseService.ts";
+import ProductService from "@/services/ProductService.ts";
 
 interface IProdCard {
     id: any;
@@ -26,6 +28,14 @@ export default function ProductCard({
         navigate(`/details/${id}`);
     }
 
+    const onClickAddCart = async () => {
+        const prod = await ProductService.findById(id)
+        const response = await PurchaseService.addToCart(prod);
+        if(response.error) {
+            alert(response.error);
+        }
+    }
+
     return (
         <Card sx={{maxWidth: 340, height: 340, display: "flex", flexDirection: "column"}}>
             <CardMedia
@@ -39,7 +49,7 @@ export default function ProductCard({
                 </Typography>
             </CardContent>
             <CardActions disableSpacing sx={{mt: "auto"}}>
-                <Button size="small" >
+                <Button size="small" onClick={onClickAddCart}>
                     <AddShoppingCartIcon/>
                     Adicionar ao carrinho
                 </Button>
