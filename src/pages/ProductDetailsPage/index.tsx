@@ -8,6 +8,7 @@ export function ProductDetailsPage(){
     const [data, setData] = useState<IProduct>({} as IProduct);
     const {id} = useParams();
     const navigate  = useNavigate();
+    const [imgUrl, setImgUrl] = useState<string>('');
 
     useEffect(() => {
         loadData();
@@ -17,6 +18,7 @@ export function ProductDetailsPage(){
         const response = await ProductService.findById(parseInt(id as string));
         if (response.status === 200) {
             setData(response.data);
+            setImgUrl(response.data.image);
         } else {
             navigate("/404");
         }
@@ -29,7 +31,7 @@ export function ProductDetailsPage(){
                     <h1 className="h3 mb-3 fw-normal">Detalhes do Produto</h1>
                     <div className="row">
                         <div className="col-md-6">
-                            <img src="https://via.placeholder.com/400" alt="Imagem do Produto"/>
+                            <img src={imgUrl} alt="Imagem do Produto" height={300} width={300}/>
                         </div>
                         <div className="col-md-6">
                             <h2>{data.name}</h2>

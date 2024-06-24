@@ -26,7 +26,7 @@ export function HomePage() {
                         <Grid item xs={2} sm={4} md={4} key={product.id}>
                             <ProductCard name={product.name}
                                          id={product.id}
-                                         imgUrl={product?.imgUrl}/>
+                                         imgUrl={product?.image}/>
                         </Grid>
                     ))}
                 </Grid>
