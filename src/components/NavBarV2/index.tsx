@@ -14,10 +14,20 @@ import MenuItem from '@mui/material/MenuItem';
 import {Link, useNavigate} from "react-router-dom";
 import logo from "@/assets/img/efe9e807814e42e2b0176b80aa0e49ac (1).png";
 import {useEffect, useState} from "react";
-import {ICategory} from "@/commons/interfaces.ts";
+import {ICategory, IUserLogin} from "@/commons/interfaces.ts";
 import CategoryService from "@/services/CategoryService.ts";
 import AuthService from "@/services/AuthService.ts";
 import {LoginPageModal} from "@/components/ModalLogin";
+import {
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    FormControl, FormLabel, Input,
+    TextField
+} from "@mui/material";
+import {InputRounded} from "@mui/icons-material";
 
 interface IRoute {
     page: string;
@@ -30,18 +40,25 @@ const settings: IRoute[] = [{page: '/categories', name: 'Categorias'},
     {page: 'logout', name: 'Logout'}];
 
 function ResponsiveAppBar() {
+    const [form, setForm] = useState({
+        username: "",
+        password: "",
+    });
+    const [pendingApiCall, setPendingApiCall] = useState(false);
+    const [apiError, setApiError] = useState("");
+    const [apiSuccess, setApiSuccess] = useState("");
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElCategory, setAnchorElCategory] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
     const [data, setData] = useState<ICategory[]>([]);
     const [validToken, setValidToken] = useState<boolean>(false);
-    const [open, setOpen] = useState(false);
+    const [openLogin, setOpenLogin] = useState(false);
     const handleOpen = () => {
-        setOpen(true);
+        setOpenLogin(true);
     };
 
     const handleClose = () => {
-        setOpen(false);
+        setOpenLogin(false);
     };
 
     useEffect(() => {
@@ -59,12 +76,32 @@ function ResponsiveAppBar() {
         }
     }
 
-    const onClickLogout = () =>{
+    const onClickLogout = () => {
         setValidToken(false);
         handleCloseUserMenu()
         localStorage.removeItem('token');
         navigate("/");
     }
+
+    const onClickLogin = async () => {
+        const login: IUserLogin = {
+            username: form.username,
+            password: form.password,
+        };
+
+        const response = await AuthService.login(login);
+        if (response.status === 200 || response.status === 201) {
+            setApiSuccess("Autenticado com sucesso!");
+            setTimeout(() => {
+                navigate("/");
+            }, 1000);
+
+            setOpenLogin(false);
+        } else {
+            setApiError("Erro ao localizar o usuário!");
+        }
+        setPendingApiCall(false);
+    };
 
     const handleOpenCategoryMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElCategory(event.currentTarget);
@@ -153,7 +190,11 @@ function ResponsiveAppBar() {
                                             aria-expanded={anchorElCategory ? 'true' : undefined}
                                             style={{color: "white"}}
                                     >
-                                        <Typography textAlign="center" sx={{my: 2, color: 'white', display: 'block'}}>{page.name}</Typography>
+                                        <Typography textAlign="center" sx={{
+                                            my: 2,
+                                            color: 'white',
+                                            display: 'block'
+                                        }}>{page.name}</Typography>
                                     </Button>
                                     <Menu
                                         sx={{mt: '45px'}}
@@ -183,7 +224,7 @@ function ResponsiveAppBar() {
                         ))}
                     </Box>
                     {!validToken ? (
-                            <Button onClick={handleOpen}>
+                            <Button onClick={() => handleOpen()}>
                                 <Typography textAlign="center"
                                             aria-valuetext={"Login"}
                                             sx={{my: 2, color: 'white', display: 'block'}}
@@ -192,43 +233,87 @@ function ResponsiveAppBar() {
                                 </Typography>
                             </Button>) :
                         (<Box key={3} sx={{flexGrow: 0}}>
-                        <Tooltip title="Open settings">
-                            <IconButton onClick={handleOpenUserMenu} sx={{p: 0}}>
-                                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg"/>
-                            </IconButton>
-                        </Tooltip>
-                        <Menu
-                            sx={{mt: '45px'}}
-                            id="menu-appbar"
-                            anchorEl={anchorElUser}
-                            anchorOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                            open={Boolean(anchorElUser)}
-                            onClose={handleCloseUserMenu}
-                        >
-                            {settings.map((setting, index) => (setting.page != "logout" ?
-                                (
-                                <MenuItem key={index} onClick={() => navigate(setting.page)}>
-                                    <Typography textAlign="center">{setting.name}</Typography>
-                                </MenuItem>
-                            ): (
-                                <MenuItem key={index} onClick={() => onClickLogout()}>
-                                    <Typography textAlign="center">{setting.name}</Typography>
-                                </MenuItem>
-                                )
-                            ))}
-                        </Menu>
-                    </Box>)}
-                    <LoginPageModal open={open} handleClose={handleClose} />
+                            <Tooltip title="Open settings">
+                                <IconButton onClick={handleOpenUserMenu} sx={{p: 0}}>
+                                    <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg"/>
+                                </IconButton>
+                            </Tooltip>
+                            <Menu
+                                sx={{mt: '45px'}}
+                                id="menu-appbar"
+                                anchorEl={anchorElUser}
+                                anchorOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                keepMounted
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                open={Boolean(anchorElUser)}
+                                onClose={handleCloseUserMenu}
+                            >
+                                {settings.map((setting, index) => (setting.page != "logout" ?
+                                        (
+                                            <MenuItem key={index} onClick={() => navigate(setting.page)}>
+                                                <Typography textAlign="center">{setting.name}</Typography>
+                                            </MenuItem>
+                                        ) : (
+                                            <MenuItem key={index} onClick={() => onClickLogout()}>
+                                                <Typography textAlign="center">{setting.name}</Typography>
+                                            </MenuItem>
+                                        )
+                                ))}
+                            </Menu>
+                        </Box>)}
+                    <Dialog open={openLogin}
+                            onClose={handleClose}
+                            PaperProps={{
+                                component: 'form',
+                            }}>
+                        <DialogTitle>
+                            <Typography textAlign="center">Login</Typography>
+                        </DialogTitle>
+                        <DialogContent>
+                            <FormControl>
+                                <FormLabel>
+                                    <Typography textAlign="center">Informe seu usuário:</Typography>
+                                </FormLabel>
+                                <Input
+                                    autoFocus
+                                    required
+                                    margin="dense"
+                                    id="username"
+                                    name="username"
+                                    type="text"
+                                    fullWidth/>
+                            </FormControl>
+                            <FormControl>
+                                <FormLabel>
+                                    <Typography textAlign="center">Informe sua senha:</Typography>
+                                </FormLabel>
+                                <Input
+                                    required
+                                    margin="dense"
+                                    id="password"
+                                    name="password"
+                                    type="password"
+                                    fullWidth/>
+                            </FormControl>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={() => {
+                                navigate("/signup")
+                                handleClose()
+                            }}>Cadastre-se</Button>
+                            <Button onClick={handleClose}>Cancelar</Button>
+                            <Button type="submit" onSubmit={onClickLogin}>Login</Button>
+                        </DialogActions>
+                    </Dialog>
                 </Toolbar>
             </Container>
+
         </AppBar>
     );
 }

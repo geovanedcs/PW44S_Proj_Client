@@ -1,8 +1,8 @@
 import { ChangeEvent, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import  AuthService from '@/services/AuthService.ts';
+import AuthService from '@/services/AuthService.ts';
 import { IUserSignUp } from '@/commons/interfaces.ts';
-import {Input} from "@/components/Input";
+import {Input} from "@/components/input";
 
 export function UserSignUpPage() {
 
