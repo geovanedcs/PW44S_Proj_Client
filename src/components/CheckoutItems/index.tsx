@@ -12,6 +12,7 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import InfoIcon from '@mui/icons-material/Info';
 import ProductService from "@/services/ProductService.ts";
+import {useNavigate} from "react-router-dom";
 
 interface props {
     id: number;
@@ -21,11 +22,9 @@ export function ProductCard({id}: props) {
 
     const [quantity, setQuantity] = useState(0);
     const [product, setProduct] = useState<IProduct>({} as IProduct);
-
     useEffect( ()  => {
         getQuantity();
     }, []);
-
 
     const getQuantity = async () => {
         const response = await ProductService.findById(id);
@@ -35,6 +34,7 @@ export function ProductCard({id}: props) {
         const cart = await PurchaseService.retrieveCart();
         setQuantity(cart.find((item: any) => item.product.id === id)?.quantity || 0);
     }
+    const navigate = useNavigate();
 
     return (
         <>
@@ -68,7 +68,7 @@ export function ProductCard({id}: props) {
                                     <RemoveIcon fontSize="small"/>
                                 </Button>
                                 <Button>
-                                   1
+                                    {quantity}
                                 </Button>
                                 <Button
                                     aria-label="increase"
@@ -81,7 +81,7 @@ export function ProductCard({id}: props) {
                             </ButtonGroup>
                         </div>
                         <div>
-                            <Button variant="contained">
+                            <Button variant="contained" onClick={() => navigate(`/details/${id}`)}>
                                 <InfoIcon/>
                                 Mais detalhes
                             </Button>

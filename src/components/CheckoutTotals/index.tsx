@@ -13,7 +13,7 @@ interface CheckoutTotalsProps {
 export function CheckoutTotals(prop: CheckoutTotalsProps) {
     return (
         <>
-            <Card variant="outlined">
+            <Card variant="outlined" sx={{margin: 5}}>
                 <CardContent>
                     <Typography variant="h5" component="div">
                         Total do carrinho

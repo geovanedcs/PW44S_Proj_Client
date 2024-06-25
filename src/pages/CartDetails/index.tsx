@@ -26,7 +26,6 @@ export function CartDetails() {
         }
         setCart(tmpCart);
         const total = cart.reduce((sum: any, product: IProduct) => sum + product.price, 0);
-
         setTotal(total.toFixed(2));
     }
 
