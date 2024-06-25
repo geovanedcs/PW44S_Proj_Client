@@ -8,7 +8,6 @@ import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import LaunchIcon from '@mui/icons-material/Launch';
 import {useNavigate} from "react-router-dom";
 import {PurchaseService} from "@/services/PurchaseService.ts";
-import ProductService from "@/services/ProductService.ts";
 
 interface IProdCard {
     id: any;
@@ -29,11 +28,7 @@ export default function ProductCard({
     }
 
     const onClickAddCart = async () => {
-        const prod = await ProductService.findById(id)
-        const response = await PurchaseService.addToCart(prod.data);
-        if(response.error) {
-            alert(response.error);
-        }
+        await PurchaseService.addToCart(id);
     }
 
     return (

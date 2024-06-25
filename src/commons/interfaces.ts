@@ -15,7 +15,7 @@ export interface ICategory {
 }
 
 export interface IProduct {
-    id?: number;
+    id: number;
     name: string;
     description: string;
     image?: string;
@@ -25,7 +25,10 @@ export interface IProduct {
 }
 
 export interface ICartItem {
-    product: IProduct;
+    product: {
+        id: number;
+        name?: string;
+    };
     quantity: number;
     discount?: number;
 }

@@ -1,5 +1,5 @@
 import {api} from "@/libs/axios.ts";
-import {IProduct} from "@/commons/interfaces.ts";
+import {ICartItem} from "@/commons/interfaces.ts";
 
 const URL = '/purchase';
 
@@ -13,15 +13,30 @@ const retrieveCart = async () => {
     return response;
 }
 
-const addToCart = async (product: IProduct) => {
+
+const addToCart = async (id: number) => {
     let response;
     try {
         const cart = await retrieveCart();
-        cart.push(product);
+        const index = cart.findIndex((item: ICartItem) => id === item.product.id);
+        if (index !== -1) {
+            cart[index].quantity += 1;
+        } else {
+            const apiResponse = await api.get(`/products/${id}`);
+            if (apiResponse.status === 200) {
+                response = {
+                    product: {
+                        id: apiResponse.data.id,
+                        name: apiResponse.data.name
+                    },
+                    quantity: 1
+                }
+            }
+            cart.push(response);
+        }
         localStorage.setItem('cart', JSON.stringify(cart));
-        response = cart;
     } catch (error: any) {
-        response = error.response;
+       response = error.response;
     }
     return response;
 }
@@ -79,6 +94,11 @@ const remove = async (id: number) => {
     return response;
 }
 
+const valueBadge = async () => {
+    const response = await retrieveCart();
+    return response.length;
+}
+
 export const PurchaseService = {
     retrieveCart,
     addToCart,
@@ -87,4 +107,5 @@ export const PurchaseService = {
     findAll,
     findById,
     remove,
+    valueBadge
 };

@@ -78,19 +78,18 @@ function ResponsiveAppBar() {
     }
     useEffect(() => {
         loadData();
-    }, []);
+    }, [cartBadge]);
 
     const loadData = async () => {
         const validToken = await AuthService.isAuthenticatedTokenValid();
         const response = await CategoryService.findAll();
-        const cart = await PurchaseService.retrieveCart();
         if (response.status === 200) {
             setValidToken(validToken);
             setData(response.data);
         } else {
             localStorage.removeItem('token');
         }
-        setCartBadge(cart.length);
+        setCartBadge(await PurchaseService.valueBadge());
     }
 
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {

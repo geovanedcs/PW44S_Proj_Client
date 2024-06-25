@@ -11,42 +11,49 @@ import {PurchaseService} from "@/services/PurchaseService.ts";
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import InfoIcon from '@mui/icons-material/Info';
+import ProductService from "@/services/ProductService.ts";
 
 interface props {
-    prod: IProduct;
+    id: number;
 }
 
-export function ProductCard(prod: props) {
+export function ProductCard({id}: props) {
 
     const [quantity, setQuantity] = useState(0);
+    const [product, setProduct] = useState<IProduct>({} as IProduct);
 
-    useEffect(() => {
+    useEffect( ()  => {
         getQuantity();
     }, []);
 
+
     const getQuantity = async () => {
-        const response = await PurchaseService.retrieveCart();
-        setQuantity(response.filter((product: IProduct) => product.id === prod.prod.id).length);
+        const response = await ProductService.findById(id);
+        if(response.status === 200){
+            setProduct(response.data);
+        }
+        const cart = await PurchaseService.retrieveCart();
+        setQuantity(cart.find((item: any) => item.product.id === id)?.quantity || 0);
     }
 
     return (
         <>
-            <Card sx={{display: 'flex'}}>
-                <Box key={prod.prod.id} sx={{display: 'flex', flexDirection: 'column'}}>
+            <Card sx={{display: 'flex', marginBottom: 2}}>
+                <Box key={product.id} sx={{display: 'flex', flexDirection: 'column'}}>
                     <CardMedia
                         component="img"
                         sx={{width: 150}}
-                        image={prod.prod.image}
-                        alt={prod.prod.name}/>
+                        image={product?.image}
+                        alt={product.name}/>
                 </Box>
                 <Box sx={{paddingRight: 30}}/>
                 <Box sx={{display: 'flex', flexDirection: 'column'}}>
                     <CardContent sx={{flex: '1 0 auto'}}>
                         <Typography component="div" variant="h5">
-                            {prod.prod.name}
+                            {product.name}
                         </Typography>
                         <Typography variant="subtitle1" color="text.secondary">
-                            R$ {prod.prod.price.toFixed(2)}
+                            {/*R$ {product.price.toFixed(2)}*/}
                         </Typography>
                     </CardContent>
                     <CardActions>
@@ -61,7 +68,7 @@ export function ProductCard(prod: props) {
                                     <RemoveIcon fontSize="small"/>
                                 </Button>
                                 <Button>
-                                    {quantity}
+                                   1
                                 </Button>
                                 <Button
                                     aria-label="increase"
