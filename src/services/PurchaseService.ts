@@ -1,5 +1,5 @@
 import {api} from "@/libs/axios.ts";
-import {ICartItem} from "@/commons/interfaces.ts";
+import {ICartItem, IPurchase} from "@/commons/interfaces.ts";
 
 const URL = '/purchase';
 
@@ -13,12 +13,38 @@ const retrieveCart = async () => {
     return response;
 }
 
+const preSavePurchase = async (purchase: IPurchase) => {
+    let response ;
+    try {
+        const cart = await retrieveCart();
+        response = {
+            paymentMethod: purchase.paymentMethod,
+            zipCode: purchase.zipCode || 0,
+            addressWithUnitNumber: purchase.addressWithUnitNumber || '',
+            items: cart
+        }
+        localStorage.setItem('purchase', JSON.stringify(response));
+    } catch (error: any) {
+        response = error.response;
+    }
+    return response;
+}
+
+const getPrePurchase = async () => {
+    let response;
+    try {
+        response = await JSON.parse(localStorage.getItem('purchase') || '{}');
+    } catch (error: any) {
+        response = error.response;
+    }
+    return response;
+}
 
 const addToCart = async (id: number) => {
     let response;
     try {
         const cart = await retrieveCart();
-        const index = cart.findIndex((item: ICartItem) => id === item.product.id);
+        const index = cart.findIndex((item: ICartItem) => id === item.productRequestDTO.id);
         if (index !== -1) {
             cart[index].quantity += 1;
         } else {
@@ -107,5 +133,7 @@ export const PurchaseService = {
     findAll,
     findById,
     remove,
-    valueBadge
+    valueBadge,
+    preSavePurchase,
+    getPrePurchase
 };

@@ -11,6 +11,7 @@ import ResponsiveAppBar from "@/components/NavBarV2";
 import {ProductDetailsPage} from "@/pages/ProductDetailsPage";
 import Box from "@mui/material/Box";
 import {CartDetails} from "@/pages/CartDetails";
+import CheckOutPage from "@/pages/Checkout";
 
 export function BaseRoutes() {
     return (
@@ -33,6 +34,7 @@ export function BaseRoutes() {
                     <Route path="/products" element={<ProductListPage />} />
                     <Route path="/products/new" element={<ProductFormPage />} />
                     <Route path="/products/:id" element={<ProductFormPage />} />
+                    <Route path="/checkout" element={<CheckOutPage />} />
                 </Route>
             </Routes>
         </>

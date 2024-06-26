@@ -4,6 +4,7 @@ import Typography from "@mui/material/Typography";
 import CardActions from "@mui/material/CardActions";
 import {Button} from "@mui/material";
 import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
+import {useNavigate} from "react-router-dom";
 
 interface CheckoutTotalsProps {
     total: number;
@@ -11,6 +12,7 @@ interface CheckoutTotalsProps {
 }
 
 export function CheckoutTotals(prop: CheckoutTotalsProps) {
+    const navigate = useNavigate();
     return (
         <>
             <Card variant="outlined" sx={{margin: 5}}>
@@ -26,7 +28,7 @@ export function CheckoutTotals(prop: CheckoutTotalsProps) {
                     </Typography>
                 </CardContent>
                 <CardActions sx={{textAlign: "center"}}>
-                    <Button>
+                    <Button onClick={() => navigate("/checkout")}>
                         <ShoppingCartCheckoutIcon></ShoppingCartCheckoutIcon>
                         <Typography>CheckOut</Typography>
                     </Button>

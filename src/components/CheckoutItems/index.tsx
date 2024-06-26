@@ -22,6 +22,7 @@ export function ProductCard({id}: props) {
 
     const [quantity, setQuantity] = useState(0);
     const [product, setProduct] = useState<IProduct>({} as IProduct);
+    const [price, setPrice] = useState(0);
     useEffect( ()  => {
         getQuantity();
     }, []);
@@ -30,6 +31,7 @@ export function ProductCard({id}: props) {
         const response = await ProductService.findById(id);
         if(response.status === 200){
             setProduct(response.data);
+            setPrice(response.data.price.toFixed(2));
         }
         const cart = await PurchaseService.retrieveCart();
         setQuantity(cart.find((item: any) => item.product.id === id)?.quantity || 0);
@@ -53,7 +55,7 @@ export function ProductCard({id}: props) {
                             {product.name}
                         </Typography>
                         <Typography variant="subtitle1" color="text.secondary">
-                            {/*R$ {product.price.toFixed(2)}*/}
+                            R$ {price}
                         </Typography>
                     </CardContent>
                     <CardActions>

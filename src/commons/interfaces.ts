@@ -25,7 +25,7 @@ export interface IProduct {
 }
 
 export interface ICartItem {
-    product: {
+    productRequestDTO: {
         id: number;
         name?: string;
     };
@@ -36,7 +36,7 @@ export interface ICartItem {
 export interface IPurchase {
     paymentMethod: string;
     zipCode: string;
-    address?: string;
-    products: ICartItem[];
+    addressWithUnitNumber?: string;
+    items: ICartItem[];
     status?: string;
 }

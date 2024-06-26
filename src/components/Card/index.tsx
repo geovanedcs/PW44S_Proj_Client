@@ -32,15 +32,15 @@ export default function ProductCard({
     }
 
     return (
-        <Card sx={{maxWidth: 340, height: 340, display: "flex", flexDirection: "column"}}>
+        <Card sx={{height: 400,  display: "flex", flexDirection: "column"}}>
             <CardMedia
-                sx={{height: 140}}
+                sx={{height: "100%", width: "75%", objectFit: "fit", margin: "auto"}}
                 image={imgUrl}
                 title={name}
             />
             <CardContent sx={{mt: "auto"}}>
-                <Typography gutterBottom variant="h5" component="div">
-                    {name}
+                <Typography gutterBottom variant="h6">
+                    {name.toLowerCase()}
                 </Typography>
             </CardContent>
             <CardActions disableSpacing sx={{mt: "auto"}}>
