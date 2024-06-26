@@ -7,11 +7,13 @@ import Typography from "@mui/material/Typography";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import {useCartContext} from "@/Context/CartContext.tsx";
 
 export function ProductDetailsPage(){
 
     const [data, setData] = useState<IProduct>({} as IProduct);
     const {id} = useParams();
+    const {addOne} = useCartContext();
     const navigate  = useNavigate();
     const [imgUrl, setImgUrl] = useState<string>('');
 
@@ -42,7 +44,9 @@ export function ProductDetailsPage(){
                                 <CardContent>
                                     <Typography variant="h5" component="h2">{data.name}</Typography>
                                     <Typography>R$ {data.price}</Typography>
-                                    <Button variant="contained" color="primary">Adicionar ao Carrinho</Button>
+                                    <Button variant="contained"
+                                            onClick={()=> addOne(data.id)}
+                                            color="primary">Adicionar ao Carrinho</Button>
                                 </CardContent>
                             </Card>
                         </Grid>

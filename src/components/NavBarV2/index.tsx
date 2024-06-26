@@ -28,7 +28,7 @@ import {
     DialogTitle,
     FormControl, FormLabel, Input, Snackbar,
 } from "@mui/material";
-import {PurchaseService} from "@/services/PurchaseService.ts";
+import {useCartContext} from "@/Context/CartContext.tsx";
 
 interface IRoute {
     page: string;
@@ -53,7 +53,7 @@ function ResponsiveAppBar() {
         username: "",
         password: "",
     });
-    const [cartBadge, setCartBadge] = useState(0);
+    const { cartQuantity } = useCartContext();
     const [pendingApiCall, setPendingApiCall] = useState(false);
     const [apiError, setApiError] = useState("");
     const [apiSuccess, setApiSuccess] = useState("");
@@ -78,7 +78,7 @@ function ResponsiveAppBar() {
     }
     useEffect(() => {
         loadData();
-    }, [cartBadge]);
+    }, []);
 
     const loadData = async () => {
         const validToken = await AuthService.isAuthenticatedTokenValid();
@@ -89,7 +89,6 @@ function ResponsiveAppBar() {
         } else {
             localStorage.removeItem('token');
         }
-        setCartBadge(await PurchaseService.valueBadge());
     }
 
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -249,7 +248,7 @@ function ResponsiveAppBar() {
                     </Box>
                     <Box key={6} sx={{flexGrow: 0, paddingRight: 2}}>
                         <IconButton aria-label="cart" onClick={() => navigate("/cart")}>
-                            <StyledBadge badgeContent={cartBadge} color="secondary">
+                            <StyledBadge badgeContent={cartQuantity} color="secondary">
                                 <ShoppingCartIcon />
                             </StyledBadge>
                         </IconButton>

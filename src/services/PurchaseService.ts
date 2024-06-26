@@ -6,7 +6,7 @@ const URL = '/purchase';
 const retrieveCart = async () => {
     let response;
     try {
-        response = await JSON.parse(localStorage.getItem('cart') || '[]');
+        response = await JSON.parse(localStorage.getItem('items') || '[]');
     } catch (error: any) {
         response = error.response;
     }
@@ -33,7 +33,7 @@ const preSavePurchase = async (purchase: IPurchase) => {
 const getPrePurchase = async () => {
     let response;
     try {
-        response = await JSON.parse(localStorage.getItem('purchase') || '{}');
+        response = await JSON.parse(localStorage.getItem('purchase') || '');
     } catch (error: any) {
         response = error.response;
     }
@@ -60,7 +60,7 @@ const addToCart = async (id: number) => {
             }
             cart.push(response);
         }
-        localStorage.setItem('cart', JSON.stringify(cart));
+        localStorage.setItem('items', JSON.stringify(cart));
     } catch (error: any) {
        response = error.response;
     }
@@ -72,7 +72,7 @@ const removeFromCart = async (index: number) => {
     try {
         const cart = await retrieveCart();
         cart.splice(index, 1);
-        localStorage.setItem('cart', JSON.stringify(cart));
+        localStorage.setItem('items', JSON.stringify(cart));
         response = cart;
     } catch (error: any) {
         response = error.response;

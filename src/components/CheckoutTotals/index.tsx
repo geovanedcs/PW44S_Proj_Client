@@ -5,6 +5,7 @@ import CardActions from "@mui/material/CardActions";
 import {Button} from "@mui/material";
 import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
 import {useNavigate} from "react-router-dom";
+import {formatCurrency} from "@/commons/formatCurrency.ts";
 
 interface CheckoutTotalsProps {
     total: number;
@@ -12,6 +13,7 @@ interface CheckoutTotalsProps {
 }
 
 export function CheckoutTotals(prop: CheckoutTotalsProps) {
+
     const navigate = useNavigate();
     return (
         <>
@@ -21,7 +23,7 @@ export function CheckoutTotals(prop: CheckoutTotalsProps) {
                         Total do carrinho
                     </Typography>
                     <Typography variant="body2">
-                        Total em produtos: {prop.total}
+                        Total em produtos: {formatCurrency(prop.total)}
                     </Typography>
                     <Typography variant="body2">
                         Desconto: {prop.discount}
