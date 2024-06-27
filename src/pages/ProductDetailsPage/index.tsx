@@ -8,6 +8,7 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {useCartContext} from "@/Context/CartContext.tsx";
+import {formatCurrency} from "@/commons/formatCurrency.ts";
 
 export function ProductDetailsPage(){
 
@@ -43,7 +44,7 @@ export function ProductDetailsPage(){
                             <Card>
                                 <CardContent>
                                     <Typography variant="h5" component="h2">{data.name}</Typography>
-                                    <Typography>R$ {data.price}</Typography>
+                                    <Typography>{formatCurrency(data.price)}</Typography>
                                     <Button variant="contained"
                                             onClick={()=> addOne(data.id)}
                                             color="primary">Adicionar ao Carrinho</Button>

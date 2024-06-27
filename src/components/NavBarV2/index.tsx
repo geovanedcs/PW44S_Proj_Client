@@ -26,7 +26,7 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
-    FormControl, FormLabel, Input, Snackbar,
+    FormControl, FormGroup, FormLabel, Input, Snackbar,
 } from "@mui/material";
 import {useCartContext} from "@/Context/CartContext.tsx";
 
@@ -301,7 +301,7 @@ function ResponsiveAppBar() {
                             onClose={handleClose}
                             PaperProps={{
                                 component: 'form',
-                                onSubmit: (event: { preventDefault: () => void; }) => {
+                                onSubmit: (event: React.FormEvent) => {
                                     event.preventDefault();
                                     onClickLogin();
                                 }
@@ -310,35 +310,37 @@ function ResponsiveAppBar() {
                             <Typography textAlign="center">Login</Typography>
                         </DialogTitle>
                         <DialogContent>
-                            <FormControl>
-                                <FormLabel>
-                                    <Typography textAlign="center">Informe seu usuário:</Typography>
-                                </FormLabel>
-                                <Input
-                                    autoFocus
-                                    required
-                                    margin="dense"
-                                    value={form.username}
-                                    id="username"
-                                    name="username"
-                                    type="text"
-                                    onChange={onChange}
-                                    fullWidth/>
-                            </FormControl>
-                            <FormControl>
-                                <FormLabel>
-                                    <Typography textAlign="center">Informe sua senha:</Typography>
-                                </FormLabel>
-                                <Input
-                                    required
-                                    margin="dense"
-                                    id="password"
-                                    name="password"
-                                    type="password"
-                                    value={form.password}
-                                    onChange={onChange}
-                                    fullWidth/>
-                            </FormControl>
+                            <FormGroup>
+                                <FormControl>
+                                    <FormLabel>
+                                        <Typography textAlign="center">Informe seu usuário:</Typography>
+                                    </FormLabel>
+                                    <Input
+                                        autoFocus
+                                        required
+                                        margin="dense"
+                                        value={form.username}
+                                        id="username"
+                                        name="username"
+                                        type="text"
+                                        onChange={onChange}
+                                        fullWidth/>
+                                </FormControl>
+                                <FormControl>
+                                    <FormLabel>
+                                        <Typography textAlign="center">Informe sua senha:</Typography>
+                                    </FormLabel>
+                                    <Input
+                                        required
+                                        margin="dense"
+                                        id="password"
+                                        name="password"
+                                        type="password"
+                                        value={form.password}
+                                        onChange={onChange}
+                                        fullWidth/>
+                                </FormControl>
+                            </FormGroup>
                             {apiError && (
                                 <div className="alert alert-danger text-center">{apiError}</div>
                             )}
