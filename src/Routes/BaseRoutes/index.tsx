@@ -12,6 +12,7 @@ import {ProductDetailsPage} from "@/pages/ProductDetailsPage";
 import Box from "@mui/material/Box";
 import {CartDetails} from "@/pages/CartDetails";
 import CheckOutPage from "@/pages/Checkout";
+import {HomeFiltered} from "@/pages/HomeFiltered";
 
 export function BaseRoutes() {
     return (
@@ -21,6 +22,7 @@ export function BaseRoutes() {
             <Routes>
                 {/*Public Routes*/}
                 <Route path="/" element={<HomePage />} />
+                <Route path="/categories/:id" element={<HomeFiltered />}/>
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<UserSignUpPage />} />
                 <Route path="/details/:id" element={<ProductDetailsPage />} />

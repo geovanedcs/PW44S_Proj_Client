@@ -5,19 +5,15 @@ import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
-import LaunchIcon from '@mui/icons-material/Launch';
 import {useNavigate} from "react-router-dom";
 import {useCartContext} from "@/Context/CartContext.tsx";
 import {Snackbar} from "@mui/material";
 import React, {useEffect, useState} from "react";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from '@mui/icons-material/Close';
+import {IProduct} from "@/commons/interfaces.ts";
+import {formatCurrency} from "@/commons/formatCurrency.ts";
 
-interface IProdCard {
-    id: any;
-    name: string;
-    imgUrl?: string;
-}
 export interface SnackbarMessage {
     message: string;
     key: number;
@@ -26,8 +22,9 @@ export interface SnackbarMessage {
 export default function ProductCard({
                                         id,
                                         name,
-                                        imgUrl,
-                                    }: IProdCard) {
+                                        image,
+                                        price,
+                                    }: IProduct) {
 
     const [addSuccess, setAddSuccess] = useState(false);
     const [snackPack, setSnackPack] = React.useState<readonly SnackbarMessage[]>([]);
@@ -39,7 +36,7 @@ export default function ProductCard({
     useEffect(() => {
         if (snackPack.length && !messageInfo) {
             // Set a new snack when we don't have an active one
-            setMessageInfo({ ...snackPack[0] });
+            setMessageInfo({...snackPack[0]});
             setSnackPack((prev) => prev.slice(1));
             setAddSuccess(true);
         } else if (snackPack.length && messageInfo && addSuccess) {
@@ -61,7 +58,7 @@ export default function ProductCard({
     }
 
     const onClickAdd = (message: string) => {
-        setSnackPack((prev) => [...prev, { message, key: new Date().getTime() }]);
+        setSnackPack((prev) => [...prev, {message, key: new Date().getTime()}]);
         addOne(id);
         setAddSuccess(true);
     }
@@ -75,43 +72,43 @@ export default function ProductCard({
         <Card sx={{height: 400, display: "flex", flexDirection: "column"}}>
             <CardMedia
                 sx={{height: "100%", width: "75%", objectFit: "fit", margin: "auto"}}
-                image={imgUrl}
-                title={name}
+                image={image}
+                title={"Clique para mais detalhes."}
+                onClick={() => onClickNavigate()}
+                onMouseEnter={(e) => e.currentTarget.style.cursor = "pointer"}
             />
-            <CardContent sx={{mt: "auto"}}>
+            <CardContent>
                 <Typography gutterBottom variant="h6">
                     {name.toLowerCase()}
                 </Typography>
+                <Typography variant="body2" color="text.secondary">
+                    {formatCurrency(price)}
+                </Typography>
             </CardContent>
-            <CardActions disableSpacing sx={{mt: "auto"}}>
-                <Button variant="contained" size="small" onClick={() => onClickAdd("Adicionado com sucesso")}>
+            <CardActions sx={{justifyContent: "center"}}>
+                <Button variant="contained" onClick={() => onClickAdd("Adicionado com sucesso")}>
                     <AddShoppingCartIcon/>
                     Adicionar ao carrinho
-                </Button>
-                <Button size="small" onClick={() => onClickNavigate()}>
-                    <LaunchIcon/>
-                    Detalhes
                 </Button>
             </CardActions>
             <Snackbar open={addSuccess}
                       autoHideDuration={6000}
                       onClose={handleCloseSnackbar}
-                      anchorOrigin={{vertical: 'top', horizontal: 'right'}}
-                      sx={{paddingTop: 7}}
-                      TransitionProps={{ onExited: handleExited }}
+                      anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
+                      TransitionProps={{onExited: handleExited}}
                       message={messageInfo ? messageInfo.message : undefined}
                       action={
                           <React.Fragment>
                               <Button color="secondary" size="small" onClick={onClickUndo}>
-                                  UNDO
+                                  Desfazer
                               </Button>
                               <IconButton
                                   aria-label="close"
                                   color="inherit"
-                                  sx={{ p: 0.5 }}
+                                  sx={{p: 0.5}}
                                   onClick={onClickUndo}
                               >
-                                  <CloseIcon />
+                                  <CloseIcon/>
                               </IconButton>
                           </React.Fragment>
                       }

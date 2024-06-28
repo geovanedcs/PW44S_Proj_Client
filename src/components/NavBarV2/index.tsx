@@ -146,7 +146,7 @@ function ResponsiveAppBar() {
     };
 
     const handleCloseCategoryMenu = (whereTo: string) => {
-        navigate(whereTo)
+        navigate(whereTo);
         setAnchorElCategory(null);
     }
 
@@ -237,7 +237,7 @@ function ResponsiveAppBar() {
                                         }}
                                     >
                                         {data.map((data, index) => (
-                                            <MenuItem key={index} onClick={() => handleCloseCategoryMenu(page.page)}>
+                                            <MenuItem key={index} onClick={() => handleCloseCategoryMenu(`/categories/${data.id}`)}>
                                                 <Typography textAlign="center">{data.name}</Typography>
                                             </MenuItem>
                                         ))}
