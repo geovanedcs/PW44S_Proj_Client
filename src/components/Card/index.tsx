@@ -24,6 +24,7 @@ export default function ProductCard({
                                         name,
                                         image,
                                         price,
+                                        category
                                     }: IProduct) {
 
     const [addSuccess, setAddSuccess] = useState(false);
@@ -82,7 +83,7 @@ export default function ProductCard({
                     {name.toLowerCase()}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                    {formatCurrency(price)}
+                    {formatCurrency(price)} / {category.name}
                 </Typography>
             </CardContent>
             <CardActions sx={{justifyContent: "center"}}>

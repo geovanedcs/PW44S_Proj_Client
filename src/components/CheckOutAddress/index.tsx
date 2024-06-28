@@ -1,7 +1,10 @@
 import {ChangeEvent, useState} from "react";
+import {useCheckoutContext} from "@/Context/CheckoutContext.tsx";
+import {FilledInput, FormControl, FormGroup, InputAdornment, InputLabel} from "@mui/material";
+import SearchIcon from '@mui/icons-material/Search';
 import axios from "axios";
-import {PurchaseService} from "@/services/PurchaseService.ts";
-import {IPurchase} from "@/commons/interfaces.ts";
+import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
 
 interface IAddress {
     zipCode: number,
@@ -16,7 +19,8 @@ export function CheckOutAddress() {
         address: '',
         number: 0,
     });
-    const [pendingApiCall, setPendingApiCall] = useState(false);
+    const {setZipCode, setAddressWithUnitNumber} = useCheckoutContext();
+    // const [pendingApiCall, setPendingApiCall] = useState(false);
 
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
         const {name, value} = event.target;
@@ -26,30 +30,45 @@ export function CheckOutAddress() {
         });
     }
 
-    const onClickLoadAddress = async (cep: number) =>{
-        setPendingApiCall(true)
-        const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
-        if(response.status === 200){
+    const onClickBuscaCep = async () => {
+        const response = await axios.get(`https://viacep.com.br/ws/${form.zipCode}/json/`);
+        if (response.status === 200) {
             setForm({
-                zipCode: response.data.cep,
-                address: response.data.logradouro,
+                ...form,
+                address: response.data.logradouro + ' - ' + response.data.bairro + ' - ' + response.data.localidade + ' / ' + response.data.uf,
             });
         }
-
+        setZipCode(form.zipCode.toString());
+        setAddressWithUnitNumber(form.address);
     }
 
-    const onSubmit = async () => {
-        setPendingApiCall(true)
-        const preShop:IPurchase = await PurchaseService.getPrePurchase();
-        preShop.zipCode = String(form.zipCode);
-        preShop.addressWithUnitNumber = `${form.address}, ${form.number}`;
-        await PurchaseService.preSavePurchase(preShop);
-
-    };
 
     return (
         <>
-
+            <Box sx={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center'}}>
+                <FormGroup>
+                    <FormControl fullWidth sx={{m: 1}} variant="filled">
+                        <InputLabel htmlFor="filled-adornment-cep">CEP</InputLabel>
+                        <FilledInput id="filled-adornment-cep"
+                                     name="zipCode"
+                                     onChange={onChange}
+                                     endAdornment={<InputAdornment position="end">
+                                         <IconButton onClick={onClickBuscaCep}
+                                                     aria-label="Buscar CEP">
+                                             <SearchIcon/>
+                                         </IconButton>
+                                     </InputAdornment>}
+                        />
+                    </FormControl>
+                    <FormControl>
+                        <InputLabel htmlFor="filled-endereco">Endereço</InputLabel>
+                        <FilledInput id="filled-endereco"
+                                     name="address"
+                                     value={form.address}
+                                     onChange={onChange}/>
+                    </FormControl>
+                </FormGroup>
+            </Box>
         </>
     );
 }

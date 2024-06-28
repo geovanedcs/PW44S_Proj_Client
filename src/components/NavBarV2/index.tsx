@@ -301,9 +301,9 @@ function ResponsiveAppBar() {
                             onClose={handleClose}
                             PaperProps={{
                                 component: 'form',
-                                onSubmit: (event: React.FormEvent) => {
+                                onSubmit: async (event: React.FormEvent) => {
                                     event.preventDefault();
-                                    onClickLogin();
+                                    await onClickLogin();
                                 }
                             }}>
                         <DialogTitle>

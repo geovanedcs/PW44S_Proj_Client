@@ -7,6 +7,7 @@ import Typography from '@mui/material/Typography';
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {PurchaseService} from "@/services/PurchaseService.ts";
+import {CheckOutAddress} from "@/components/CheckOutAddress";
 
 const steps = ['Endereço', 'Pagamento', 'Revisar Pedido'];
 
@@ -57,6 +58,7 @@ export default function CheckOutPage() {
                     );
                 })}
             </Stepper>
+            <CheckOutAddress/>
             {activeStep === steps.length - 1 ? (
                 <>
                     <Typography sx={{mt: 2, mb: 1}}>
