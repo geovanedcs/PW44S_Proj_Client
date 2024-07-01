@@ -29,6 +29,7 @@ import {
     FormControl, FormGroup, FormLabel, Input, Snackbar,
 } from "@mui/material";
 import {useCartContext} from "@/Context/CartContext.tsx";
+import ProductService from "@/services/ProductService.ts";
 
 interface IRoute {
     page: string;
@@ -45,7 +46,6 @@ const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
 
 const pages: IRoute [] = [{page: '/', name: 'Home'}, {page: '/categories', name: 'Categorias'}]
 const settings: IRoute[] = [{page: '/purchases', name: 'Histórico'},
-    {page: '/products', name: 'Produtos'},
     {page: 'logout', name: 'Logout'}];
 
 function ResponsiveAppBar() {
@@ -83,9 +83,16 @@ function ResponsiveAppBar() {
     const loadData = async () => {
         const validToken = await AuthService.isAuthenticatedTokenValid();
         const response = await CategoryService.findAll();
+        const prods = await ProductService.findAll();
         if (response.status === 200) {
+            const tmp: ICategory[] = [];
+            response.data.forEach((category: ICategory) => {
+                if(prods.data.filter((prod: { category: { id: number | undefined; }; }) => prod.category.id === category.id).length > 0){
+                    tmp.push(category);
+                }
+            });
             setValidToken(validToken);
-            setData(response.data);
+            setData(tmp);
         } else {
             localStorage.removeItem('token');
         }

@@ -25,9 +25,11 @@ export function CheckoutTotals(prop: CheckoutTotalsProps) {
                     <Typography variant="body2">
                         Total em produtos: {formatCurrency(prop.total)}
                     </Typography>
-                    <Typography variant="body2">
-                        Desconto: {prop.discount}
-                    </Typography>
+                    {prop && prop.discount > 0 && (
+                        <Typography variant="body2">
+                            Desconto: {formatCurrency(prop.discount)}
+                        </Typography>
+                    )}
                 </CardContent>
                 <CardActions sx={{textAlign: "center"}}>
                     <Button onClick={() => navigate("/checkout")}>

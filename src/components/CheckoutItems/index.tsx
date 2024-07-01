@@ -14,6 +14,7 @@ import ProductService from "@/services/ProductService.ts";
 import {useNavigate} from "react-router-dom";
 import {useCartContext} from "@/Context/CartContext.tsx";
 import {formatCurrency} from "@/commons/formatCurrency.ts";
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
 interface props {
     id: number;
@@ -21,7 +22,7 @@ interface props {
 
 export function ProductCard({id}: props) {
 
-    const {getQuantity, addOne, removeOne} = useCartContext()
+    const {getQuantity, addOne, removeOne, removeItem} = useCartContext()
     const [product, setProduct] = useState<IProduct>({} as IProduct);
     useEffect( ()  => {
         loadProduct();
@@ -37,7 +38,7 @@ export function ProductCard({id}: props) {
 
     return (
         <>
-            <Card sx={{display: 'flex', marginBottom: 2}}>
+            <Card sx={{display: 'flex', marginBottom: 2, justifyContent:'space-between'}}>
                 <Box key={product.id} sx={{display: 'flex', flexDirection: 'column'}}>
                     <CardMedia
                         component="img"
@@ -45,7 +46,7 @@ export function ProductCard({id}: props) {
                         image={product?.image}
                         alt={product.name}/>
                 </Box>
-                <Box sx={{display: 'flex', flexDirection: 'column'}}>
+                <Box sx={{display: 'flex', flexDirection: 'column', textAlign:'end'}}>
                     <CardContent sx={{flex: '1 0 auto'}}>
                         <Typography component="div" variant="h5">
                             {product.name}
@@ -74,6 +75,7 @@ export function ProductCard({id}: props) {
                                 </Button>
                             </ButtonGroup>
                         </div>
+                        <Button variant="contained" onClick={() => removeItem(id)}><DeleteForeverIcon /></Button>
                         <div>
                             <Button variant="contained" onClick={() => navigate(`/details/${id}`)}>
                                 <InfoIcon/>

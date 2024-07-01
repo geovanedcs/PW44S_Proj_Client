@@ -111,11 +111,11 @@ export default function CheckOutPage() {
                             onClick={backPage}
                             sx={{mr: 1}}
                         >
-                            Back
+                            Voltar
                         </Button>
                         <Box sx={{flex: '1 1 auto'}}/>
                         <Button onClick={nextPage}>
-                            {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+                            {activeStep === steps.length - 1 ? 'Finalizar compra' : 'Próximo'}
                         </Button>
                     </Box>
                 </>

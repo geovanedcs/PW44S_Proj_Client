@@ -33,11 +33,26 @@ export interface ICartItem {
     discount?: number;
 }
 
+export interface IPurchaseItems {
+    product:{
+        id: number;
+        name: string;
+        description?: string;
+        price: number;
+        category: ICategory;
+        image?: string;
+    }
+    quantity: number;
+    discount: number;
+}
+
 export interface IPurchase {
+    id?: number;
     paymentMethod: string;
     zipCode: number;
     addressWithUnitNumber?: string;
-    items: ICartItem[];
+    items?: ICartItem[];
+    purchasedItems?: IPurchaseItems[];
     status?: string;
     purchaseDate?: string;
     total?: number;

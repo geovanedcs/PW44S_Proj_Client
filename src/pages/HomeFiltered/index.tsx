@@ -4,7 +4,6 @@ import ProductService from "@/services/ProductService.ts";
 import {Breadcrumbs, Button, Grid} from "@mui/material";
 import ProductCard from "@/components/Card";
 import {useNavigate, useParams} from "react-router-dom";
-import CategoryService from "@/services/CategoryService.ts";
 
 export function HomeFiltered() {
 
@@ -16,26 +15,21 @@ export function HomeFiltered() {
         loadData();
     }, [id]);
 
-    const loadCategory = async () =>{
-        const cat = await CategoryService.findById(parseInt(id as string));
-        console.log(id)
-        if(cat.status === 200){
-            setCategory(cat.data);
-        }
-        console.log(category)
-    }
-
     const loadData = async () => {
-        await loadCategory();
         const response = await ProductService.findAll();
         if (response.status === 200) {
             const tmp: IProduct[] = [];
             response.data.forEach((product: IProduct) => {
-                if (product.category.id === category?.id) {
+                if (product.category.id === parseInt(id as string)) {
                     tmp.push(product);
                 }
             });
-            setData(tmp);
+            if(tmp.length === 0){
+                navigate("/404");
+            }else{
+                setData(tmp);
+                setCategory(tmp[0].category);
+            }
         }
     }
 
