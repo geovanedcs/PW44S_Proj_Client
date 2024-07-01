@@ -17,7 +17,7 @@ const login = async (user: IUserLogin): Promise<any> => {
         if(response.status === 200) {
             localStorage.setItem("token", JSON.stringify(response.data.token));
             api.defaults.headers.common["Authorization"] = `Bearer ${response.data.token}`;
-            localStorage.setItem("user", JSON.stringify(response.data.user));
+            localStorage.setItem("user", JSON.stringify(user.username));
         }
     } catch (error: any) {
         response = error.response;
@@ -25,6 +25,14 @@ const login = async (user: IUserLogin): Promise<any> => {
     return response;
 };
 
+const isAuthenticated = (): boolean => {
+    const token = localStorage.getItem("token");
+    if(token) {
+        api.defaults.headers.common["Authorization"] = `Bearer ${JSON.parse(token)}`;
+        return true;
+    }
+    return false;
+}
 
 const isAuthenticatedTokenValid = async(): Promise<boolean> => {
     const token = localStorage.getItem("token");
@@ -52,6 +60,7 @@ const AuthService = {
     signup,
     login,
     logout,
+    isAuthenticated,
     isAuthenticatedTokenValid,
 };
 

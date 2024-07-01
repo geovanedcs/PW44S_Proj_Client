@@ -22,9 +22,8 @@ interface props {
 
 export function ProductCard({id}: props) {
 
-    const {getQuantity, addOne, removeOne, removeItem} = useCartContext()
+    const {getQuantity, addOne, removeOne, removeItem} = useCartContext();
     const [product, setProduct] = useState<IProduct>({} as IProduct);
-    const [error, setError] = useState("");
     useEffect(() => {
         loadProduct();
     }, []);
@@ -35,7 +34,8 @@ export function ProductCard({id}: props) {
             if (getQuantity(id) < response.data.stock) {
                 setProduct(response.data);
             } else {
-                setError("Quantidade indisponível")
+                removeItem(id)
+
             }
         }
     }
@@ -61,7 +61,7 @@ export function ProductCard({id}: props) {
                         </Typography>
                     </CardContent>
                     <CardActions>
-                        {error ? (<div>
+                        <div>
                             <ButtonGroup>
                                 <Button
                                     aria-label="reduce"
@@ -79,9 +79,7 @@ export function ProductCard({id}: props) {
                                     <AddIcon fontSize="small"/>
                                 </Button>
                             </ButtonGroup>
-                        </div>):
-                            (<Button variant="contained" disabled={true}>Indisponível</Button>)
-                        }
+                        </div>
                         <Button variant="contained" onClick={() => removeItem(id)}><DeleteForeverIcon/></Button>
                         <div>
                             <Button variant="contained" onClick={() => navigate(`/details/${id}`)}>

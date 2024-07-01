@@ -46,7 +46,6 @@ export default function CheckOutPage() {
 
     const onClickCheckOut = async () => {
         const preShop = getPurchase();
-        console.log(preShop)
         const response  = await PurchaseService.save(preShop);
         if(response.status === 201){
             alert("Compra realizada com sucesso!")
