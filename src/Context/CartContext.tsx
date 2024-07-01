@@ -13,6 +13,7 @@ type ShoppingCartContext = {
     cartQuantity: number;
     totalAmount:(products: IProduct[]) => number;
     cartItems: ICartItem[];
+    clearCart: () => void;
 }
 
 const CartContext = createContext({} as ShoppingCartContext);
@@ -31,7 +32,7 @@ export function CartProvider({children}: CartProviderProps){
     function addOne(id: number){
         setCartItems(currItems => {
             if(currItems.find(item => item.productRequestDTO.id === id)==null){
-                return [...currItems, {productRequestDTO: {id}, quantity: 1}];
+                return [...currItems, {productRequestDTO: {id}, quantity: 1, discount: 0}];
             }else{
                 return currItems.map(item => {
                     if(item.productRequestDTO.id === id){
@@ -74,6 +75,10 @@ export function CartProvider({children}: CartProviderProps){
         return total;
     }
 
+    function clearCart(){
+        setCartItems([]);
+    }
+
     return (
         <CartContext.Provider value={{
             getQuantity,
@@ -82,7 +87,8 @@ export function CartProvider({children}: CartProviderProps){
             removeItem,
             cartQuantity,
             totalAmount,
-            cartItems
+            cartItems,
+            clearCart
         }}>
             {children}
         </CartContext.Provider>

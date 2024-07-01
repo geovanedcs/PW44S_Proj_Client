@@ -35,8 +35,10 @@ export interface ICartItem {
 
 export interface IPurchase {
     paymentMethod: string;
-    zipCode: string;
+    zipCode: number;
     addressWithUnitNumber?: string;
     items: ICartItem[];
     status?: string;
+    purchaseDate?: string;
+    total?: number;
 }

@@ -1,86 +1,10 @@
 import {api} from "@/libs/axios.ts";
-import {ICartItem, IPurchase} from "@/commons/interfaces.ts";
+import {IPurchase} from "@/commons/interfaces.ts";
 
 const URL = '/purchase';
 
-const retrieveCart = async () => {
-    let response;
-    try {
-        response = await JSON.parse(localStorage.getItem('items') || '[]');
-    } catch (error: any) {
-        response = error.response;
-    }
-    return response;
-}
 
-const preSavePurchase = async (purchase: IPurchase) => {
-    let response ;
-    try {
-        const cart = await retrieveCart();
-        response = {
-            paymentMethod: purchase.paymentMethod,
-            zipCode: purchase.zipCode || 0,
-            addressWithUnitNumber: purchase.addressWithUnitNumber || '',
-            items: cart
-        }
-        localStorage.setItem('purchase', JSON.stringify(response));
-    } catch (error: any) {
-        response = error.response;
-    }
-    return response;
-}
-
-const getPrePurchase = async () => {
-    let response;
-    try {
-        response = await JSON.parse(localStorage.getItem('purchase') || '');
-    } catch (error: any) {
-        response = error.response;
-    }
-    return response;
-}
-
-const addToCart = async (id: number) => {
-    let response;
-    try {
-        const cart = await retrieveCart();
-        const index = cart.findIndex((item: ICartItem) => id === item.productRequestDTO.id);
-        if (index !== -1) {
-            cart[index].quantity += 1;
-        } else {
-            const apiResponse = await api.get(`/products/${id}`);
-            if (apiResponse.status === 200) {
-                response = {
-                    product: {
-                        id: apiResponse.data.id,
-                        name: apiResponse.data.name
-                    },
-                    quantity: 1
-                }
-            }
-            cart.push(response);
-        }
-        localStorage.setItem('items', JSON.stringify(cart));
-    } catch (error: any) {
-       response = error.response;
-    }
-    return response;
-}
-
-const removeFromCart = async (index: number) => {
-    let response;
-    try {
-        const cart = await retrieveCart();
-        cart.splice(index, 1);
-        localStorage.setItem('items', JSON.stringify(cart));
-        response = cart;
-    } catch (error: any) {
-        response = error.response;
-    }
-    return response;
-}
-
-const save = async (purchase: any) => {
+const save = async (purchase: IPurchase) => {
     let response;
     try {
         response = await api.post(URL, purchase);
@@ -120,20 +44,10 @@ const remove = async (id: number) => {
     return response;
 }
 
-const valueBadge = async () => {
-    const response = await retrieveCart();
-    return response.length;
-}
 
 export const PurchaseService = {
-    retrieveCart,
-    addToCart,
-    removeFromCart,
     save,
     findAll,
     findById,
     remove,
-    valueBadge,
-    preSavePurchase,
-    getPrePurchase
 };

@@ -13,6 +13,8 @@ import Box from "@mui/material/Box";
 import {CartDetails} from "@/pages/CartDetails";
 import CheckOutPage from "@/pages/Checkout";
 import {HomeFiltered} from "@/pages/HomeFiltered";
+import {PurchaseHistory} from "@/pages/PurchaseHistory";
+import {PurchaseDetails} from "@/pages/PurchaseDetails";
 
 export function BaseRoutes() {
     return (
@@ -37,6 +39,8 @@ export function BaseRoutes() {
                     <Route path="/products/new" element={<ProductFormPage />} />
                     <Route path="/products/:id" element={<ProductFormPage />} />
                     <Route path="/checkout" element={<CheckOutPage />} />
+                    <Route path="/purchases" element={<PurchaseHistory />} />
+                    <Route path="/purchases/:id" element={<PurchaseDetails />} />
                 </Route>
             </Routes>
         </>

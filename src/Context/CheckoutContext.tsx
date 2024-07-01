@@ -1,4 +1,4 @@
-import {IPurchase} from "@/commons/interfaces.ts";
+import {ICartItem, IPurchase} from "@/commons/interfaces.ts";
 import {createContext, ReactNode, useContext, useState} from "react";
 
 type CheckoutProviderProps = {
@@ -6,54 +6,69 @@ type CheckoutProviderProps = {
 }
 
 type CheckoutContextType = {
-    getZipCode: ()  => string;
+    getZipCode: () => number;
     getAddressWithUnitNumber: () => string;
     getPaymentMethod: () => string;
-    setZipCode: (zipCode: string) => void;
+    setZipCode: (zipCode: number) => void;
     setAddressWithUnitNumber: (addressWithUnitNumber: string) => void;
     setPaymentMethod: (paymentMethod: string) => void;
+    addProducts: (cart: ICartItem[]) => void;
+    getPurchase: () => IPurchase;
 }
 
 const CheckoutContext = createContext({} as CheckoutContextType);
 
-export function useCheckoutContext(){
+export function useCheckoutContext() {
     return useContext(CheckoutContext);
 }
 
-export function CheckoutProvider({children}: CheckoutProviderProps){
+export function CheckoutProvider({children}: CheckoutProviderProps) {
     const [purchase, setPurchase] = useState<IPurchase>({
-        zipCode: "",
+        zipCode: 0,
         items: [],
         paymentMethod: "",
     });
 
-    function getZipCode(){
-        return purchase?.zipCode || "";
+    function getZipCode() {
+        return purchase?.zipCode || 0;
     }
-    function getAddressWithUnitNumber(){
+
+    function getAddressWithUnitNumber() {
         return purchase?.addressWithUnitNumber || "";
     }
-    function getPaymentMethod(){
+
+    function getPaymentMethod() {
         return purchase?.paymentMethod || "";
     }
 
-    function setZipCode(zipCode: string) {
+    function setZipCode(zipCode: number) {
         setPurchase(curr => {
             return {...curr, zipCode: zipCode};
         });
     }
 
-    function setAddressWithUnitNumber(addressWithUnitNumber: string){
+    function setAddressWithUnitNumber(addressWithUnitNumber: string) {
         setPurchase(curr => {
             return {...curr, addressWithUnitNumber: addressWithUnitNumber};
         });
     }
 
-    function setPaymentMethod(paymentMethod: string){
+    function setPaymentMethod(paymentMethod: string) {
         setPurchase(curr => {
             return {...curr, paymentMethod: paymentMethod};
         });
     }
+
+    function addProducts(items: ICartItem[]) {
+        setPurchase(curr => {
+            return {...curr, items: items};
+        });
+    }
+
+    function getPurchase() {
+        return purchase;
+    }
+
     return (
         <CheckoutContext.Provider value={{
             getZipCode,
@@ -61,7 +76,9 @@ export function CheckoutProvider({children}: CheckoutProviderProps){
             getAddressWithUnitNumber,
             setAddressWithUnitNumber,
             getPaymentMethod,
-            setPaymentMethod
+            setPaymentMethod,
+            addProducts,
+            getPurchase,
         }}>
             {children}
         </CheckoutContext.Provider>

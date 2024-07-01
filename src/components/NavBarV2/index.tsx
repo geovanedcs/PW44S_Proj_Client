@@ -44,7 +44,7 @@ const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
 }));
 
 const pages: IRoute [] = [{page: '/', name: 'Home'}, {page: '/categories', name: 'Categorias'}]
-const settings: IRoute[] = [{page: '/categories', name: 'Categorias'},
+const settings: IRoute[] = [{page: '/purchases', name: 'Histórico'},
     {page: '/products', name: 'Produtos'},
     {page: 'logout', name: 'Logout'}];
 

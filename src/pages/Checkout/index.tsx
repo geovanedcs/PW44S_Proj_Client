@@ -3,18 +3,30 @@ import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {PurchaseService} from "@/services/PurchaseService.ts";
 import {CheckOutAddress} from "@/components/CheckOutAddress";
+import {CheckoutPayment} from "@/components/CheckoutPayment";
+import {CheckoutReview} from "@/components/CheckoutReview";
+import {useCartContext} from "@/Context/CartContext.tsx";
+import {useCheckoutContext} from "@/Context/CheckoutContext.tsx";
 
 const steps = ['Endereço', 'Pagamento', 'Revisar Pedido'];
 
 export default function CheckOutPage() {
 
     const [activeStep, setActiveStep] = useState(0);
+    const [address, setAddress] = useState(true);
+    const [payment, setPayment] = useState(true);
+    const [review, setReview] = useState(true);// eslint-disable-line
     const navigate = useNavigate();
+    const {cartItems, clearCart} = useCartContext()
+    const {getPurchase, addProducts} = useCheckoutContext();
+
+    useEffect(() => {
+        showComponent();
+    }, [activeStep]);
 
     const handleNext = () => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -25,24 +37,46 @@ export default function CheckOutPage() {
     };
 
     const nextPage = async () => {
-        const preShop = await PurchaseService.getPrePurchase();
-        await PurchaseService.preSavePurchase(preShop);
         handleNext();
     }
 
     const backPage = async () => {
-        const preShop = await PurchaseService.getPrePurchase();
-        await PurchaseService.preSavePurchase(preShop);
         handleBack();
     }
 
     const onClickCheckOut = async () => {
-        const preShop = await PurchaseService.getPrePurchase();
+        const preShop = getPurchase();
+        console.log(preShop)
         const response  = await PurchaseService.save(preShop);
-        if(response.status === 200){
+        if(response.status === 201){
+            alert("Compra realizada com sucesso!")
             navigate("/");
+            clearCart();
         }
     }
+
+    const showComponent = () => {
+        addProducts(cartItems)
+        console.log(getPurchase())
+        if(activeStep === 0){
+            setAddress(false);
+            setPayment(true);
+            setReview(true)
+        }else if(activeStep === 1){
+            setAddress(true);
+            setPayment(false);
+            setReview(true)
+        }else if(activeStep === 2){
+            setAddress(true);
+            setPayment(true);
+            setReview(false)
+        }else{
+            setAddress(true);
+            setPayment(true);
+            setReview(true)
+        }
+    }
+
     return (
         <Box sx={{width: '100%'}}>
             <Stepper activeStep={activeStep}>
@@ -58,12 +92,11 @@ export default function CheckOutPage() {
                     );
                 })}
             </Stepper>
-            <CheckOutAddress/>
+            <CheckOutAddress disable={address}/>
+            <CheckoutPayment disable={payment}/>
             {activeStep === steps.length - 1 ? (
                 <>
-                    <Typography sx={{mt: 2, mb: 1}}>
-                        Revise sua compra
-                    </Typography>
+                    <CheckoutReview disable={review} />
                     <Box sx={{display: 'flex', flexDirection: 'row', pt: 2}}>
                         <Box sx={{flex: '1 1 auto'}}/>
                         <Button onClick={() => onClickCheckOut()}>Finalizar Compra</Button>
@@ -71,7 +104,6 @@ export default function CheckOutPage() {
                 </>
             ) : (
                 <>
-                    <Typography sx={{mt: 2, mb: 1}}>{steps[activeStep]}</Typography>
                     <Box sx={{display: 'flex', flexDirection: 'row', pt: 2}}>
                         <Button
                             color="inherit"
