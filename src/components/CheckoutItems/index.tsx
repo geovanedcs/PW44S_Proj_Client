@@ -24,21 +24,26 @@ export function ProductCard({id}: props) {
 
     const {getQuantity, addOne, removeOne, removeItem} = useCartContext()
     const [product, setProduct] = useState<IProduct>({} as IProduct);
-    useEffect( ()  => {
+    const [error, setError] = useState("");
+    useEffect(() => {
         loadProduct();
     }, []);
 
     const loadProduct = async () => {
         const response = await ProductService.findById(id);
-        if(response.status === 200){
-            setProduct(response.data);
+        if (response.status === 200) {
+            if (getQuantity(id) < response.data.stock) {
+                setProduct(response.data);
+            } else {
+                setError("Quantidade indisponível")
+            }
         }
     }
     const navigate = useNavigate();
 
     return (
         <>
-            <Card sx={{display: 'flex', marginBottom: 2, justifyContent:'space-between'}}>
+            <Card sx={{display: 'flex', marginBottom: 2, justifyContent: 'space-between'}}>
                 <Box key={product.id} sx={{display: 'flex', flexDirection: 'column'}}>
                     <CardMedia
                         component="img"
@@ -46,7 +51,7 @@ export function ProductCard({id}: props) {
                         image={product?.image}
                         alt={product.name}/>
                 </Box>
-                <Box sx={{display: 'flex', flexDirection: 'column', textAlign:'end'}}>
+                <Box sx={{display: 'flex', flexDirection: 'column', textAlign: 'end'}}>
                     <CardContent sx={{flex: '1 0 auto'}}>
                         <Typography component="div" variant="h5">
                             {product.name}
@@ -56,7 +61,7 @@ export function ProductCard({id}: props) {
                         </Typography>
                     </CardContent>
                     <CardActions>
-                        <div>
+                        {error ? (<div>
                             <ButtonGroup>
                                 <Button
                                     aria-label="reduce"
@@ -74,8 +79,10 @@ export function ProductCard({id}: props) {
                                     <AddIcon fontSize="small"/>
                                 </Button>
                             </ButtonGroup>
-                        </div>
-                        <Button variant="contained" onClick={() => removeItem(id)}><DeleteForeverIcon /></Button>
+                        </div>):
+                            (<Button variant="contained" disabled={true}>Indisponível</Button>)
+                        }
+                        <Button variant="contained" onClick={() => removeItem(id)}><DeleteForeverIcon/></Button>
                         <div>
                             <Button variant="contained" onClick={() => navigate(`/details/${id}`)}>
                                 <InfoIcon/>

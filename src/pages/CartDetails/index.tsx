@@ -39,7 +39,6 @@ export function CartDetails() {
                 <Button color="inherit" disabled={true}>Carrinho</Button>
             </Breadcrumbs>
             <Grid container spacing={2} justifyContent="center" alignItems="center">
-
                 {cartItems && cartItems.length > 0 && (
                     <>
                         <Stack spacing={2}>
